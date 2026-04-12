@@ -21,7 +21,6 @@ const add_one = async (email, password) => {
     })
 }
 
-
 export {
     find_one_by_id,
     find_one_by_email,

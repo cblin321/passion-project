@@ -1,9 +1,12 @@
 // react imports
-import { createContext, useContext, useState } from 'react';
+import {
+    createContext, useContext,
+    useState, useEffect, useMemo
+} from 'react';
 
 const AuthContext = createContext()
-function AuthContext({ children }) {
-    const [token, setToken] = useState(localStorage.get("jwt_token"))
+function AuthProvider({ children }) {
+    const [token, setToken] = useState(localStorage.getItem("jwt_token"))
 
     useEffect(() => {
         if (token)
@@ -15,10 +18,10 @@ function AuthContext({ children }) {
 
 
     // prevent rerenders when token is unchanged
-    const token_memo = useMemo(() => {
+    const token_memo = useMemo(() => ({
         token,
-            setToken
-    }, [token])
+        setToken
+    }), [token])
 
     return <AuthContext value={token_memo}> {children} </AuthContext>
 }
@@ -27,4 +30,4 @@ export function useToken() {
     return useContext(AuthContext)
 }
 
-export default AuthContext
+export default AuthProvider

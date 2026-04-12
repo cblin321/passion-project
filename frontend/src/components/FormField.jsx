@@ -1,7 +1,7 @@
-function FormField({ inputType, inputPlaceholder, inputId }) {
+function FormField({ inputType, inputPlaceholder, labelText, inputId, onChange }) {
     return <div className="form-field">
-        <label htmlFor={inputId} ></label>
-        <input id={inputId} type={inputType} placeholder={inputPlaceholder} />
+        <label htmlFor={inputId} >{labelText}</label>
+        <input id={inputId} type={inputType} placeholder={inputPlaceholder} onChange={onChange} />
     </div>
 }
 

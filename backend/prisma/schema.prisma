@@ -13,14 +13,30 @@ datasource db {
 }
 
 model User {
-    id       Int    @id @default(autoincrement())
-    email    String @unique
-    files    File[]
-    password String
+    id        Int         @id @default(autoincrement())
+    email     String      @unique
+    password  String
+    fileUsers FileUsers[]
 }
 
 model File {
-    id      Int  @id @default(autoincrement())
-    ownerID Int
-    owner   User @relation(fields: [ownerID], references: [id])
+    id        Int         @id @default(autoincrement())
+    name      String
+    fileUsers FileUsers[]
+}
+
+model FileUsers {
+    userId Int
+    fileId Int
+    user   User @relation(fields: [userId], references: [id])
+    file   File @relation(fields: [fileId], references: [id])
+    role   Role
+
+    @@id([userId, fileId])
+}
+
+enum Role {
+    OWNER
+    EDITOR
+    VIEWER
 }
