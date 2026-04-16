@@ -2,6 +2,8 @@
 import Signup from "./pages/signup"
 import Login from "./pages/login"
 import Home from "./pages/home"
+import CreateFile from "./pages/create_file"
+import File from "./pages/file"
 
 // react router imports
 import { Routes, Route } from "react-router"
@@ -16,6 +18,10 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="login" element={<Login />} />
                 <Route path="signup" element={<Signup />} />
+                <Route path="signup" element={<Signup />} />
+                <Route path="/file/" element={<File />}>
+                    <Route path="create" element={<CreateFile />} />
+                </Route>
             </Routes>
         </AuthProvider>
     </>

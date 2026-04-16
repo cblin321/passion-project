@@ -1,5 +1,4 @@
 import { prisma } from "../lib/prisma.js"
-import * as user_service from "user_service.js"
 
 async function create_one(user_id, name) {
     return await prisma.file.create({
@@ -17,6 +16,16 @@ async function create_one(user_id, name) {
                 ]
             }
 
+        }
+    })
+}
+
+async function get_all_by_user(user_id) {
+    return await prisma.file.findMany({
+        where: {
+            fileUsers: {
+                some: { userId: user_id }
+            }
         }
     })
 }
