@@ -2,7 +2,7 @@
 import { useToken } from "../auth/AuthProvider"
 
 // hooks
-import { useRef } from "react"
+import { useRef, useState } from "react"
 
 // components
 import FormField from "../components/FormField"
@@ -21,9 +21,19 @@ function CreateFile() {
         redirect("/login")
 
     const title = useRef("")
+    const [err, setErr] = useState()
+    const [loading, setLoading] = useState()
+    const [files, setFiles] = useState()
 
-    const handleSubmit = async () => {
-
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        setLoading(true)
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/file/create`, {
+            method: "POST",
+            body: {
+                title: title.current
+            }
+        })
     }
 
     //function FormField({ inputType, inputPlaceholder, labelText, inputId, onChange }) {

@@ -25,10 +25,9 @@ const app = express()
 // boilerplate
 app.use(passport.initialize())
 app.use(express.urlencoded({ extended: false }))
-app.use(cors({
-    origin: FRONTEND_ORIGIN
-}))
 app.use(express.json())
+const origin = new RegExp(`${FRONTEND_ORIGIN}$`)
+app.use(cors({ origin }))
 
 // passport config
 const jwt_opts = {
@@ -41,10 +40,8 @@ const local_opts = {
 }
 passport.use(new jwt_strategy(jwt_opts, async (jwt_payload, done) => {
     const email = jwt_payload.email
-    console.log(email)
     try {
         const user = await user_service.find_one_by_email(email)
-        console.log(user)
         return done(null, user)
     } catch (err) {
         console.log(err)

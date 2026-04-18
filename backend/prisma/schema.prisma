@@ -1,42 +1,37 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-    provider = "prisma-client-js"
-    output   = "../generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
-    provider = "postgresql"
+  provider = "postgresql"
 }
 
 model User {
-    id        Int         @id @default(autoincrement())
-    email     String      @unique
-    password  String
-    fileUsers FileUsers[]
+  id        Int         @id @default(autoincrement())
+  email     String      @unique
+  password  String
+  fileUsers FileUsers[]
 }
 
 model File {
-    id        Int         @id @default(autoincrement())
-    name      String
-    fileUsers FileUsers[]
+  id        Int         @id @default(autoincrement())
+  name      String
+  fileUsers FileUsers[]
 }
 
 model FileUsers {
-    userId Int
-    fileId Int
-    user   User @relation(fields: [userId], references: [id])
-    file   File @relation(fields: [fileId], references: [id])
-    role   Role
+  userId Int
+  fileId Int
+  role   Role
+  file   File @relation(fields: [fileId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
 
-    @@id([userId, fileId])
+  @@id([userId, fileId])
 }
 
 enum Role {
-    OWNER
-    EDITOR
-    VIEWER
+  OWNER
+  EDITOR
+  VIEWER
 }

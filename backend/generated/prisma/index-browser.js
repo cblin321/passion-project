@@ -128,7 +128,13 @@ exports.Prisma.UserScalarFieldEnum = {
 
 exports.Prisma.FileScalarFieldEnum = {
   id: 'id',
-  ownerID: 'ownerID'
+  name: 'name'
+};
+
+exports.Prisma.FileUsersScalarFieldEnum = {
+  userId: 'userId',
+  fileId: 'fileId',
+  role: 'role'
 };
 
 exports.Prisma.SortOrder = {
@@ -140,11 +146,16 @@ exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 };
-
+exports.Role = exports.$Enums.Role = {
+  OWNER: 'OWNER',
+  EDITOR: 'EDITOR',
+  VIEWER: 'VIEWER'
+};
 
 exports.Prisma.ModelName = {
   User: 'User',
-  File: 'File'
+  File: 'File',
+  FileUsers: 'FileUsers'
 };
 
 /**

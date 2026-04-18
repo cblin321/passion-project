@@ -30,6 +30,7 @@ async function get_all_by_user(user_id) {
     })
 }
 
-export default {
-    create_one
+export {
+    create_one,
+    get_all_by_user
 }
