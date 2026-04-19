@@ -17,16 +17,20 @@ file_router.get("/", passport.authenticate("jwt", { session: false, failWithErro
     })
 })
 
-file_router.post("/create", passport.authenticate("jwt", { session: false, failWithError: true }), async (req, res, next) => {
-    const title = req.body.title
-    const file = file_service.create_one(req.user.id, title)
-    if (!(file.title === title && file.fileUsers?.length === 1))
-        next(new Error("Database error"))
+file_router.post("/create", passport.authenticate("jwt",
+    { session: false, failWithError: true }), async (req, res, next) => {
 
-    const file_user = file.fileUsers[0]
+        const title = req.body.title
+        const file = await file_service.create_one(req.user.id, title)
+        if (!(file.title === title && file.fileUsers?.length === 1))
+            next(new Error("Database error"))
+        console.log("created file ", file)
 
-    if (!(file_user.userId === req.user.id && file_user.fileId === file.id))
-        next(new Error("Database error"))
-})
+        const file_user = file.fileUsers[0]
+
+        if (!(file_user.userId === req.user.id && file_user.fileId === file.id))
+            next(new Error("Database error"))
+
+    })
 
 export default file_router

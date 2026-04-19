@@ -27,25 +27,32 @@ function File() {
         setLoading(true)
         async function getFiles() {
             // fetch files for current user
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/file`,
+            let res = await fetch(`${import.meta.env.VITE_API_URL}/file`,
                 {
                     headers: {
                         "Authorization": `Bearer ${token.token}`
                     }
                 })
 
+            setLoading(false)
             if (!res.ok) {
-                setLoading(false)
                 const msg = await res.text()
                 setErr(msg)
                 return
             }
 
-            setLoading(false)
+            let data = await res.json()
+            setFiles(data)
+            console.log(data)
+
+            res = await fetch(`${import.meta.env.VITE_API_URL}/user`, {
+                headers: {
+                    "Authrization": `Bearer ${token.token}`
+                }
+            })
 
             // expect data to be user info
             const newUser = await res.json()
-            console.log(newUser)
             setUser((prevUser) => {
                 const idFields = ["id", "email"]
                 if (!prevUser || !newUser)
@@ -60,6 +67,16 @@ function File() {
         }
         getFiles()
     }, [user])
+
+    const fileItems = files.map(file => {
+        const role = file.fileUsers.filter(user => {
+
+        })
+        return
+        <div>
+            <p>file.title</p>
+        </div>
+    })
 
 
     if (loading) {

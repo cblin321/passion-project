@@ -11,13 +11,13 @@ import FormField from "../components/FormField"
 import { redirect } from "react-router"
 
 function CreateFile() {
-    const user = useToken()
+    const token = useToken()
     //model File {
     //    id        Int         @id @default(autoincrement())
     //    name      String
     //    fileUsers FileUsers[]
     //}
-    if (!user)
+    if (!token)
         redirect("/login")
 
     const title = useRef("")
@@ -30,10 +30,21 @@ function CreateFile() {
         setLoading(true)
         const res = await fetch(`${import.meta.env.VITE_API_URL}/file/create`, {
             method: "POST",
-            body: {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token.token}`
+            },
+            body: JSON.stringify({
                 title: title.current
-            }
+            })
         })
+        setLoading(false)
+
+        if (!res.ok) {
+            const msg = await res.text()
+            setErr(msg)
+            return
+        }
     }
 
     //function FormField({ inputType, inputPlaceholder, labelText, inputId, onChange }) {

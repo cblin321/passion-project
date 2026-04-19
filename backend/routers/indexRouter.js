@@ -34,4 +34,8 @@ indexRouter.post("/signup", async (req, res, next) => {
     }
 })
 
+indexRouter.get("/user", passport.authenticate("jwt", { session: false, failWithError: true }), async (req, res, next) => {
+    return req.user
+})
+
 export default indexRouter
