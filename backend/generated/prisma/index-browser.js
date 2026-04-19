@@ -128,7 +128,8 @@ exports.Prisma.UserScalarFieldEnum = {
 
 exports.Prisma.FileScalarFieldEnum = {
   id: 'id',
-  name: 'name'
+  title: 'title',
+  access: 'access'
 };
 
 exports.Prisma.FileUsersScalarFieldEnum = {
@@ -146,6 +147,11 @@ exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 };
+exports.AccessSpecifier = exports.$Enums.AccessSpecifier = {
+  PUBLIC: 'PUBLIC',
+  SHARED: 'SHARED'
+};
+
 exports.Role = exports.$Enums.Role = {
   OWNER: 'OWNER',
   EDITOR: 'EDITOR',

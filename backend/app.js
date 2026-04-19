@@ -26,7 +26,7 @@ const app = express()
 app.use(passport.initialize())
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
-const origin = new RegExp(`${FRONTEND_ORIGIN}$`)
+const origin = new RegExp(`^${FRONTEND_ORIGIN}*$`)
 app.use(cors({ origin }))
 
 // passport config

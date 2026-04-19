@@ -45,38 +45,38 @@ function File() {
             setFiles(data)
             console.log(data)
 
-            res = await fetch(`${import.meta.env.VITE_API_URL}/user`, {
-                headers: {
-                    "Authrization": `Bearer ${token.token}`
-                }
-            })
-
-            // expect data to be user info
-            const newUser = await res.json()
-            setUser((prevUser) => {
-                const idFields = ["id", "email"]
-                if (!prevUser || !newUser)
-                    return false
-
-                // if every unique identifier matches
-                if (idFields.every(field => prevUser[field] === newUser[field]))
-                    return prevUser
-
-                return newUser
-            })
+            //            res = await fetch(`${import.meta.env.VITE_API_URL}/user`, {
+            //                headers: {
+            //                    "Authrization": `Bearer ${token.token}`
+            //                }
+            //            })
+            //
+            //            // expect data to be user info
+            //            const newUser = await res.json()
+            //            setUser((prevUser) => {
+            //                const idFields = ["id", "email"]
+            //                if (!prevUser || !newUser)
+            //                    return false
+            //
+            //                // if every unique identifier matches
+            //                if (idFields.every(field => prevUser[field] === newUser[field]))
+            //                    return prevUser
+            //
+            //                return newUser
+            //            })
         }
         getFiles()
     }, [user])
 
-    const fileItems = files.map(file => {
-        const role = file.fileUsers.filter(user => {
-
-        })
-        return
-        <div>
-            <p>file.title</p>
+    const fileItems = files ? files.map(file => {
+        //        const role = file.fileUsers.filter(user => {
+        //            return user.userId === user
+        //        })
+        //
+        return <div key={file.id}>
+            <p>{file.title}</p>
         </div>
-    })
+    }) : null
 
 
     if (loading) {
@@ -89,6 +89,7 @@ function File() {
 
     return <div>
         <h1>file dashboard</h1>
+        {fileItems}
         <Outlet></Outlet>
     </div>
 }

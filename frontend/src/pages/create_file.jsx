@@ -51,8 +51,9 @@ function CreateFile() {
     return <form method="POST" onSubmit={handleSubmit}>
         <h1>create file</h1>
         <FormField inputType="text" inputPlaceholder="Untitled File" labelText={"Title"} onChange={(e) => title.current = e.target.value} />
+        <FormField inputType="file" inputPlaceholder="Upload" labelText="Your file" enctype="multipart/form-data" />
         <button type="submit">
-            Create file
+            Create new file
         </button>
     </form>
 

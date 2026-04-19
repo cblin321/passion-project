@@ -15,9 +15,10 @@ model User {
 }
 
 model File {
-  id        Int         @id @default(autoincrement())
-  name      String
+  id        Int             @id @default(autoincrement())
+  title     String          @map("title")
   fileUsers FileUsers[]
+  access    AccessSpecifier @default(SHARED)
 }
 
 model FileUsers {
@@ -34,4 +35,9 @@ enum Role {
   OWNER
   EDITOR
   VIEWER
+}
+
+enum AccessSpecifier {
+  PUBLIC
+  SHARED
 }

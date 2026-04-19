@@ -10,11 +10,9 @@ import * as file_service from "../services/file_service.js"
 const file_router = express.Router()
 
 file_router.get("/", passport.authenticate("jwt", { session: false, failWithError: true }), async (req, res) => {
-    const files = file_service.get_all_by_user(req.user.id)
-    res.json({
-        id: req.user.id,
-        email: req.user.email,
-    })
+    const files = await file_service.get_all_by_user(req.user.id)
+    console.log(files)
+    res.json(files)
 })
 
 file_router.post("/create", passport.authenticate("jwt",
