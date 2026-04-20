@@ -1,0 +1,11 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    shm_size: 512mb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: tmz
+      POSTGRES_PASSWORD: tmz
+      POSTGRES_DB: tmz_pp
