@@ -1,4 +1,6 @@
-FROM node:lts-alpine3.22 
+FROM node:latest
+
+WORKDIR /app
 
 COPY . .
 
@@ -6,4 +8,7 @@ RUN npm install
 
 EXPOSE 5173
 
-CMD ["npx", "vite"]
+CMD ["npx", "vite", "--host", "0.0.0.0"]
+
+
+

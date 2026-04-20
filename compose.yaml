@@ -5,7 +5,26 @@ services:
     shm_size: 512mb
     ports:
       - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/18/docker
     environment:
-      POSTGRES_USER: tmz
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: tmz
       POSTGRES_DB: tmz_pp
+
+  frontend:
+    depends_on: 
+      - backend
+    build: ./frontend/
+    ports:
+      - "5173:5173"
+
+  backend:
+    depends_on: 
+      - db
+    build: ./backend/
+    ports:
+      - "3000:3000"
+
+volumes:
+  db-data:
