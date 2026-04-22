@@ -1,12 +1,12 @@
 import { prisma } from "../lib/prisma.js"
 
-async function create_one(user_id, name) {
+async function create_one(user_id, title) {
     return await prisma.file.create({
         include: {
             fileUsers: true
         },
         data: {
-            name,
+            title,
             fileUsers: {
                 create: [
                     {

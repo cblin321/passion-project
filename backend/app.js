@@ -22,12 +22,21 @@ const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN
 
 const app = express()
 
+const origin = new RegExp(`^https?://([a-z0-9-]+\\.)*${FRONTEND_ORIGIN.replace(".", "\\.")}$`)
+app.use(cors({ origin }))
+app.use((req, res, next) => {
+    console.log(req.headers.origin)
+    console.log("match: ")
+    console.log(origin.test(req.headers.origin))
+    next()
+})
+//app.use(cors())
+
 // boilerplate
 app.use(passport.initialize())
-app.use(express.urlencoded({ extended: false }))
-app.use(express.json())
-const origin = new RegExp(`^${FRONTEND_ORIGIN}*$`)
-app.use(cors({ origin }))
+app.use(express.urlencoded({ extended: false, limit: "50mb" }))
+app.use(express.json({ limit: "50mb" }))
+//app.use(cors())
 
 // passport config
 const jwt_opts = {

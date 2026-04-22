@@ -21,6 +21,7 @@ function CreateFile() {
         redirect("/login")
 
     const title = useRef("")
+    const newFile = useRef()
     const [err, setErr] = useState()
     const [loading, setLoading] = useState()
     const [files, setFiles] = useState()
@@ -28,16 +29,18 @@ function CreateFile() {
     const handleSubmit = async (e) => {
         e.preventDefault()
         setLoading(true)
+        const formData = new FormData()
+        console.log(newFile.current)
+        formData.append("title", title.current)
+        formData.append("file", newFile.current)
         const res = await fetch(`${import.meta.env.VITE_API_URL}/file/create`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
                 "Authorization": `Bearer ${token.token}`
             },
-            body: JSON.stringify({
-                title: title.current
-            })
+            body: formData
         })
+
         setLoading(false)
 
         if (!res.ok) {
@@ -45,13 +48,18 @@ function CreateFile() {
             setErr(msg)
             return
         }
+
+        setErr("")
     }
 
+    if (err)
+        return <p>{err}</p>
+
     //function FormField({ inputType, inputPlaceholder, labelText, inputId, onChange }) {
-    return <form method="POST" onSubmit={handleSubmit}>
+    return <form method="POST" onSubmit={handleSubmit} encType="multipart/form-data">
         <h1>create file</h1>
         <FormField inputType="text" inputPlaceholder="Untitled File" labelText={"Title"} onChange={(e) => title.current = e.target.value} />
-        <FormField inputType="file" inputPlaceholder="Upload" labelText="Your file" enctype="multipart/form-data" />
+        <FormField inputType="file" inputProps={{ name: "file" }} inputPlaceholder="Upload" labelText="Your file" onChange={(e) => newFile.current = e.target.files[0]} />
         <button type="submit">
             Create new file
         </button>
