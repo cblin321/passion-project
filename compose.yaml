@@ -1,4 +1,15 @@
 services:
+  garage:
+    image: dxflrs/garage:v2.3.0
+    network_mode: "host"
+    restart: unless-stopped
+    build: "./garage/"
+    volumes:
+      - ./garage/garage.toml:/etc/garage.toml
+      - ./garage/meta:/var/lib/garage/meta
+      - ./garage/data:/var/lib/garage/data
+    #env_file: "garage.env"
+
   db:
     image: postgres
     restart: always
