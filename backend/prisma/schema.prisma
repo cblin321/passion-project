@@ -15,7 +15,7 @@ model User {
 }
 
 model File {
-    id        Int             @id @default(autoincrement())
+    id        String          @id
     title     String          @map("title")
     fileUsers FileUsers[]
     access    AccessSpecifier @default(SHARED)
@@ -23,10 +23,10 @@ model File {
 
 model FileUsers {
     userId Int
-    fileId Int
+    fileId String
     role   Role
-    file   File @relation(fields: [fileId], references: [id])
-    user   User @relation(fields: [userId], references: [id])
+    file   File   @relation(fields: [fileId], references: [id])
+    user   User   @relation(fields: [userId], references: [id])
 
     @@id([userId, fileId])
 }

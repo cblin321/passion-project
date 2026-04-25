@@ -2228,28 +2228,18 @@ export namespace Prisma {
 
   export type AggregateFile = {
     _count: FileCountAggregateOutputType | null
-    _avg: FileAvgAggregateOutputType | null
-    _sum: FileSumAggregateOutputType | null
     _min: FileMinAggregateOutputType | null
     _max: FileMaxAggregateOutputType | null
   }
 
-  export type FileAvgAggregateOutputType = {
-    id: number | null
-  }
-
-  export type FileSumAggregateOutputType = {
-    id: number | null
-  }
-
   export type FileMinAggregateOutputType = {
-    id: number | null
+    id: string | null
     title: string | null
     access: $Enums.AccessSpecifier | null
   }
 
   export type FileMaxAggregateOutputType = {
-    id: number | null
+    id: string | null
     title: string | null
     access: $Enums.AccessSpecifier | null
   }
@@ -2261,14 +2251,6 @@ export namespace Prisma {
     _all: number
   }
 
-
-  export type FileAvgAggregateInputType = {
-    id?: true
-  }
-
-  export type FileSumAggregateInputType = {
-    id?: true
-  }
 
   export type FileMinAggregateInputType = {
     id?: true
@@ -2327,18 +2309,6 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Select which fields to average
-    **/
-    _avg?: FileAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: FileSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
      * Select which fields to find the minimum value
     **/
     _min?: FileMinAggregateInputType
@@ -2369,19 +2339,15 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: FileCountAggregateInputType | true
-    _avg?: FileAvgAggregateInputType
-    _sum?: FileSumAggregateInputType
     _min?: FileMinAggregateInputType
     _max?: FileMaxAggregateInputType
   }
 
   export type FileGroupByOutputType = {
-    id: number
+    id: string
     title: string
     access: $Enums.AccessSpecifier
     _count: FileCountAggregateOutputType | null
-    _avg: FileAvgAggregateOutputType | null
-    _sum: FileSumAggregateOutputType | null
     _min: FileMinAggregateOutputType | null
     _max: FileMaxAggregateOutputType | null
   }
@@ -2440,7 +2406,7 @@ export namespace Prisma {
       fileUsers: Prisma.$FileUsersPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
-      id: number
+      id: string
       title: string
       access: $Enums.AccessSpecifier
     }, ExtArgs["result"]["file"]>
@@ -2867,7 +2833,7 @@ export namespace Prisma {
    * Fields of the File model
    */
   interface FileFieldRefs {
-    readonly id: FieldRef<"File", 'Int'>
+    readonly id: FieldRef<"File", 'String'>
     readonly title: FieldRef<"File", 'String'>
     readonly access: FieldRef<"File", 'AccessSpecifier'>
   }
@@ -3319,23 +3285,21 @@ export namespace Prisma {
 
   export type FileUsersAvgAggregateOutputType = {
     userId: number | null
-    fileId: number | null
   }
 
   export type FileUsersSumAggregateOutputType = {
     userId: number | null
-    fileId: number | null
   }
 
   export type FileUsersMinAggregateOutputType = {
     userId: number | null
-    fileId: number | null
+    fileId: string | null
     role: $Enums.Role | null
   }
 
   export type FileUsersMaxAggregateOutputType = {
     userId: number | null
-    fileId: number | null
+    fileId: string | null
     role: $Enums.Role | null
   }
 
@@ -3349,12 +3313,10 @@ export namespace Prisma {
 
   export type FileUsersAvgAggregateInputType = {
     userId?: true
-    fileId?: true
   }
 
   export type FileUsersSumAggregateInputType = {
     userId?: true
-    fileId?: true
   }
 
   export type FileUsersMinAggregateInputType = {
@@ -3464,7 +3426,7 @@ export namespace Prisma {
 
   export type FileUsersGroupByOutputType = {
     userId: number
-    fileId: number
+    fileId: string
     role: $Enums.Role
     _count: FileUsersCountAggregateOutputType | null
     _avg: FileUsersAvgAggregateOutputType | null
@@ -3539,7 +3501,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       userId: number
-      fileId: number
+      fileId: string
       role: $Enums.Role
     }, ExtArgs["result"]["fileUsers"]>
     composites: {}
@@ -3967,7 +3929,7 @@ export namespace Prisma {
    */
   interface FileUsersFieldRefs {
     readonly userId: FieldRef<"FileUsers", 'Int'>
-    readonly fileId: FieldRef<"FileUsers", 'Int'>
+    readonly fileId: FieldRef<"FileUsers", 'String'>
     readonly role: FieldRef<"FileUsers", 'Role'>
   }
     
@@ -4574,7 +4536,7 @@ export namespace Prisma {
     AND?: FileWhereInput | FileWhereInput[]
     OR?: FileWhereInput[]
     NOT?: FileWhereInput | FileWhereInput[]
-    id?: IntFilter<"File"> | number
+    id?: StringFilter<"File"> | string
     title?: StringFilter<"File"> | string
     access?: EnumAccessSpecifierFilter<"File"> | $Enums.AccessSpecifier
     fileUsers?: FileUsersListRelationFilter
@@ -4588,7 +4550,7 @@ export namespace Prisma {
   }
 
   export type FileWhereUniqueInput = Prisma.AtLeast<{
-    id?: number
+    id?: string
     AND?: FileWhereInput | FileWhereInput[]
     OR?: FileWhereInput[]
     NOT?: FileWhereInput | FileWhereInput[]
@@ -4602,17 +4564,15 @@ export namespace Prisma {
     title?: SortOrder
     access?: SortOrder
     _count?: FileCountOrderByAggregateInput
-    _avg?: FileAvgOrderByAggregateInput
     _max?: FileMaxOrderByAggregateInput
     _min?: FileMinOrderByAggregateInput
-    _sum?: FileSumOrderByAggregateInput
   }
 
   export type FileScalarWhereWithAggregatesInput = {
     AND?: FileScalarWhereWithAggregatesInput | FileScalarWhereWithAggregatesInput[]
     OR?: FileScalarWhereWithAggregatesInput[]
     NOT?: FileScalarWhereWithAggregatesInput | FileScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"File"> | number
+    id?: StringWithAggregatesFilter<"File"> | string
     title?: StringWithAggregatesFilter<"File"> | string
     access?: EnumAccessSpecifierWithAggregatesFilter<"File"> | $Enums.AccessSpecifier
   }
@@ -4622,7 +4582,7 @@ export namespace Prisma {
     OR?: FileUsersWhereInput[]
     NOT?: FileUsersWhereInput | FileUsersWhereInput[]
     userId?: IntFilter<"FileUsers"> | number
-    fileId?: IntFilter<"FileUsers"> | number
+    fileId?: StringFilter<"FileUsers"> | string
     role?: EnumRoleFilter<"FileUsers"> | $Enums.Role
     file?: XOR<FileScalarRelationFilter, FileWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -4642,7 +4602,7 @@ export namespace Prisma {
     OR?: FileUsersWhereInput[]
     NOT?: FileUsersWhereInput | FileUsersWhereInput[]
     userId?: IntFilter<"FileUsers"> | number
-    fileId?: IntFilter<"FileUsers"> | number
+    fileId?: StringFilter<"FileUsers"> | string
     role?: EnumRoleFilter<"FileUsers"> | $Enums.Role
     file?: XOR<FileScalarRelationFilter, FileWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -4664,7 +4624,7 @@ export namespace Prisma {
     OR?: FileUsersScalarWhereWithAggregatesInput[]
     NOT?: FileUsersScalarWhereWithAggregatesInput | FileUsersScalarWhereWithAggregatesInput[]
     userId?: IntWithAggregatesFilter<"FileUsers"> | number
-    fileId?: IntWithAggregatesFilter<"FileUsers"> | number
+    fileId?: StringWithAggregatesFilter<"FileUsers"> | string
     role?: EnumRoleWithAggregatesFilter<"FileUsers"> | $Enums.Role
   }
 
@@ -4712,44 +4672,47 @@ export namespace Prisma {
   }
 
   export type FileCreateInput = {
+    id: string
     title: string
     access?: $Enums.AccessSpecifier
     fileUsers?: FileUsersCreateNestedManyWithoutFileInput
   }
 
   export type FileUncheckedCreateInput = {
-    id?: number
+    id: string
     title: string
     access?: $Enums.AccessSpecifier
     fileUsers?: FileUsersUncheckedCreateNestedManyWithoutFileInput
   }
 
   export type FileUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     access?: EnumAccessSpecifierFieldUpdateOperationsInput | $Enums.AccessSpecifier
     fileUsers?: FileUsersUpdateManyWithoutFileNestedInput
   }
 
   export type FileUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     access?: EnumAccessSpecifierFieldUpdateOperationsInput | $Enums.AccessSpecifier
     fileUsers?: FileUsersUncheckedUpdateManyWithoutFileNestedInput
   }
 
   export type FileCreateManyInput = {
-    id?: number
+    id: string
     title: string
     access?: $Enums.AccessSpecifier
   }
 
   export type FileUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     access?: EnumAccessSpecifierFieldUpdateOperationsInput | $Enums.AccessSpecifier
   }
 
   export type FileUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     access?: EnumAccessSpecifierFieldUpdateOperationsInput | $Enums.AccessSpecifier
   }
@@ -4762,7 +4725,7 @@ export namespace Prisma {
 
   export type FileUsersUncheckedCreateInput = {
     userId: number
-    fileId: number
+    fileId: string
     role: $Enums.Role
   }
 
@@ -4774,13 +4737,13 @@ export namespace Prisma {
 
   export type FileUsersUncheckedUpdateInput = {
     userId?: IntFieldUpdateOperationsInput | number
-    fileId?: IntFieldUpdateOperationsInput | number
+    fileId?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
   }
 
   export type FileUsersCreateManyInput = {
     userId: number
-    fileId: number
+    fileId: string
     role: $Enums.Role
   }
 
@@ -4790,7 +4753,7 @@ export namespace Prisma {
 
   export type FileUsersUncheckedUpdateManyInput = {
     userId?: IntFieldUpdateOperationsInput | number
-    fileId?: IntFieldUpdateOperationsInput | number
+    fileId?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
   }
 
@@ -4903,10 +4866,6 @@ export namespace Prisma {
     access?: SortOrder
   }
 
-  export type FileAvgOrderByAggregateInput = {
-    id?: SortOrder
-  }
-
   export type FileMaxOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
@@ -4917,10 +4876,6 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     access?: SortOrder
-  }
-
-  export type FileSumOrderByAggregateInput = {
-    id?: SortOrder
   }
 
   export type EnumAccessSpecifierWithAggregatesFilter<$PrismaModel = never> = {
@@ -4952,7 +4907,7 @@ export namespace Prisma {
 
   export type FileUsersUserIdFileIdCompoundUniqueInput = {
     userId: number
-    fileId: number
+    fileId: string
   }
 
   export type FileUsersCountOrderByAggregateInput = {
@@ -4963,7 +4918,6 @@ export namespace Prisma {
 
   export type FileUsersAvgOrderByAggregateInput = {
     userId?: SortOrder
-    fileId?: SortOrder
   }
 
   export type FileUsersMaxOrderByAggregateInput = {
@@ -4980,7 +4934,6 @@ export namespace Prisma {
 
   export type FileUsersSumOrderByAggregateInput = {
     userId?: SortOrder
-    fileId?: SortOrder
   }
 
   export type EnumRoleWithAggregatesFilter<$PrismaModel = never> = {
@@ -5234,7 +5187,7 @@ export namespace Prisma {
   }
 
   export type FileUsersUncheckedCreateWithoutUserInput = {
-    fileId: number
+    fileId: string
     role: $Enums.Role
   }
 
@@ -5269,7 +5222,7 @@ export namespace Prisma {
     OR?: FileUsersScalarWhereInput[]
     NOT?: FileUsersScalarWhereInput | FileUsersScalarWhereInput[]
     userId?: IntFilter<"FileUsers"> | number
-    fileId?: IntFilter<"FileUsers"> | number
+    fileId?: StringFilter<"FileUsers"> | string
     role?: EnumRoleFilter<"FileUsers"> | $Enums.Role
   }
 
@@ -5310,12 +5263,13 @@ export namespace Prisma {
   }
 
   export type FileCreateWithoutFileUsersInput = {
+    id: string
     title: string
     access?: $Enums.AccessSpecifier
   }
 
   export type FileUncheckedCreateWithoutFileUsersInput = {
-    id?: number
+    id: string
     title: string
     access?: $Enums.AccessSpecifier
   }
@@ -5353,12 +5307,13 @@ export namespace Prisma {
   }
 
   export type FileUpdateWithoutFileUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     access?: EnumAccessSpecifierFieldUpdateOperationsInput | $Enums.AccessSpecifier
   }
 
   export type FileUncheckedUpdateWithoutFileUsersInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     access?: EnumAccessSpecifierFieldUpdateOperationsInput | $Enums.AccessSpecifier
   }
@@ -5386,7 +5341,7 @@ export namespace Prisma {
   }
 
   export type FileUsersCreateManyUserInput = {
-    fileId: number
+    fileId: string
     role: $Enums.Role
   }
 
@@ -5396,12 +5351,12 @@ export namespace Prisma {
   }
 
   export type FileUsersUncheckedUpdateWithoutUserInput = {
-    fileId?: IntFieldUpdateOperationsInput | number
+    fileId?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
   }
 
   export type FileUsersUncheckedUpdateManyWithoutUserInput = {
-    fileId?: IntFieldUpdateOperationsInput | number
+    fileId?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
   }
 

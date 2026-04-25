@@ -68,13 +68,40 @@ function File() {
         getFiles()
     }, [user])
 
+    const handleDownload = async (e, fileId, fileTitle) => {
+        console.log(`download clicked for ${fileId}`)
+        e.preventDefault()
+        let res = await fetch(`${import.meta.env.VITE_API_URL}/file/${fileId}`, {
+            headers: {
+                "Authorization": `Bearer ${token.token}`,
+            }
+        })
+        if (!res.ok) {
+            setErr(await res.text())
+            return
+        }
+
+        const blob = await res.blob()
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.download = fileTitle
+        a.href = url
+
+        a.click()
+
+
+        setErr("")
+    }
+
     const fileItems = files ? files.map(file => {
         //        const role = file.fileUsers.filter(user => {
         //            return user.userId === user
         //        })
         //
+        console.log(`file id ${file.id}`)
         return <div key={file.id}>
             <p>{file.title}</p>
+            <button onClick={(e) => { handleDownload(e, file.id, file.title) }}>Download</button>
         </div>
     }) : null
 

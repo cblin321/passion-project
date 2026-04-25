@@ -1,11 +1,12 @@
 import { prisma } from "../lib/prisma.js"
 
-async function create_one(user_id, title) {
+async function create_one(file_id, user_id, title) {
     return await prisma.file.create({
         include: {
             fileUsers: true
         },
         data: {
+            id: file_id,
             title,
             fileUsers: {
                 create: [
@@ -16,6 +17,14 @@ async function create_one(user_id, title) {
                 ]
             }
 
+        }
+    })
+}
+
+async function get_one_by_id(file_id) {
+    return await prisma.file.findUniqueOrThrow({
+        where: {
+            id: file_id
         }
     })
 }
@@ -32,5 +41,6 @@ async function get_all_by_user(user_id) {
 
 export {
     create_one,
-    get_all_by_user
+    get_all_by_user,
+    get_one_by_id
 }
