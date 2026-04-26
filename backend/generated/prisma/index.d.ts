@@ -2235,18 +2235,21 @@ export namespace Prisma {
   export type FileMinAggregateOutputType = {
     id: string | null
     title: string | null
+    originalName: string | null
     access: $Enums.AccessSpecifier | null
   }
 
   export type FileMaxAggregateOutputType = {
     id: string | null
     title: string | null
+    originalName: string | null
     access: $Enums.AccessSpecifier | null
   }
 
   export type FileCountAggregateOutputType = {
     id: number
     title: number
+    originalName: number
     access: number
     _all: number
   }
@@ -2255,18 +2258,21 @@ export namespace Prisma {
   export type FileMinAggregateInputType = {
     id?: true
     title?: true
+    originalName?: true
     access?: true
   }
 
   export type FileMaxAggregateInputType = {
     id?: true
     title?: true
+    originalName?: true
     access?: true
   }
 
   export type FileCountAggregateInputType = {
     id?: true
     title?: true
+    originalName?: true
     access?: true
     _all?: true
   }
@@ -2346,6 +2352,7 @@ export namespace Prisma {
   export type FileGroupByOutputType = {
     id: string
     title: string
+    originalName: string
     access: $Enums.AccessSpecifier
     _count: FileCountAggregateOutputType | null
     _min: FileMinAggregateOutputType | null
@@ -2369,6 +2376,7 @@ export namespace Prisma {
   export type FileSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
+    originalName?: boolean
     access?: boolean
     fileUsers?: boolean | File$fileUsersArgs<ExtArgs>
     _count?: boolean | FileCountOutputTypeDefaultArgs<ExtArgs>
@@ -2377,22 +2385,25 @@ export namespace Prisma {
   export type FileSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
+    originalName?: boolean
     access?: boolean
   }, ExtArgs["result"]["file"]>
 
   export type FileSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
+    originalName?: boolean
     access?: boolean
   }, ExtArgs["result"]["file"]>
 
   export type FileSelectScalar = {
     id?: boolean
     title?: boolean
+    originalName?: boolean
     access?: boolean
   }
 
-  export type FileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "access", ExtArgs["result"]["file"]>
+  export type FileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "originalName" | "access", ExtArgs["result"]["file"]>
   export type FileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     fileUsers?: boolean | File$fileUsersArgs<ExtArgs>
     _count?: boolean | FileCountOutputTypeDefaultArgs<ExtArgs>
@@ -2408,6 +2419,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       title: string
+      originalName: string
       access: $Enums.AccessSpecifier
     }, ExtArgs["result"]["file"]>
     composites: {}
@@ -2835,6 +2847,7 @@ export namespace Prisma {
   interface FileFieldRefs {
     readonly id: FieldRef<"File", 'String'>
     readonly title: FieldRef<"File", 'String'>
+    readonly originalName: FieldRef<"File", 'String'>
     readonly access: FieldRef<"File", 'AccessSpecifier'>
   }
     
@@ -4376,6 +4389,7 @@ export namespace Prisma {
   export const FileScalarFieldEnum: {
     id: 'id',
     title: 'title',
+    originalName: 'originalName',
     access: 'access'
   };
 
@@ -4538,6 +4552,7 @@ export namespace Prisma {
     NOT?: FileWhereInput | FileWhereInput[]
     id?: StringFilter<"File"> | string
     title?: StringFilter<"File"> | string
+    originalName?: StringFilter<"File"> | string
     access?: EnumAccessSpecifierFilter<"File"> | $Enums.AccessSpecifier
     fileUsers?: FileUsersListRelationFilter
   }
@@ -4545,6 +4560,7 @@ export namespace Prisma {
   export type FileOrderByWithRelationInput = {
     id?: SortOrder
     title?: SortOrder
+    originalName?: SortOrder
     access?: SortOrder
     fileUsers?: FileUsersOrderByRelationAggregateInput
   }
@@ -4555,6 +4571,7 @@ export namespace Prisma {
     OR?: FileWhereInput[]
     NOT?: FileWhereInput | FileWhereInput[]
     title?: StringFilter<"File"> | string
+    originalName?: StringFilter<"File"> | string
     access?: EnumAccessSpecifierFilter<"File"> | $Enums.AccessSpecifier
     fileUsers?: FileUsersListRelationFilter
   }, "id">
@@ -4562,6 +4579,7 @@ export namespace Prisma {
   export type FileOrderByWithAggregationInput = {
     id?: SortOrder
     title?: SortOrder
+    originalName?: SortOrder
     access?: SortOrder
     _count?: FileCountOrderByAggregateInput
     _max?: FileMaxOrderByAggregateInput
@@ -4574,6 +4592,7 @@ export namespace Prisma {
     NOT?: FileScalarWhereWithAggregatesInput | FileScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"File"> | string
     title?: StringWithAggregatesFilter<"File"> | string
+    originalName?: StringWithAggregatesFilter<"File"> | string
     access?: EnumAccessSpecifierWithAggregatesFilter<"File"> | $Enums.AccessSpecifier
   }
 
@@ -4674,6 +4693,7 @@ export namespace Prisma {
   export type FileCreateInput = {
     id: string
     title: string
+    originalName: string
     access?: $Enums.AccessSpecifier
     fileUsers?: FileUsersCreateNestedManyWithoutFileInput
   }
@@ -4681,6 +4701,7 @@ export namespace Prisma {
   export type FileUncheckedCreateInput = {
     id: string
     title: string
+    originalName: string
     access?: $Enums.AccessSpecifier
     fileUsers?: FileUsersUncheckedCreateNestedManyWithoutFileInput
   }
@@ -4688,6 +4709,7 @@ export namespace Prisma {
   export type FileUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
     access?: EnumAccessSpecifierFieldUpdateOperationsInput | $Enums.AccessSpecifier
     fileUsers?: FileUsersUpdateManyWithoutFileNestedInput
   }
@@ -4695,6 +4717,7 @@ export namespace Prisma {
   export type FileUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
     access?: EnumAccessSpecifierFieldUpdateOperationsInput | $Enums.AccessSpecifier
     fileUsers?: FileUsersUncheckedUpdateManyWithoutFileNestedInput
   }
@@ -4702,18 +4725,21 @@ export namespace Prisma {
   export type FileCreateManyInput = {
     id: string
     title: string
+    originalName: string
     access?: $Enums.AccessSpecifier
   }
 
   export type FileUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
     access?: EnumAccessSpecifierFieldUpdateOperationsInput | $Enums.AccessSpecifier
   }
 
   export type FileUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
     access?: EnumAccessSpecifierFieldUpdateOperationsInput | $Enums.AccessSpecifier
   }
 
@@ -4863,18 +4889,21 @@ export namespace Prisma {
   export type FileCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
+    originalName?: SortOrder
     access?: SortOrder
   }
 
   export type FileMaxOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
+    originalName?: SortOrder
     access?: SortOrder
   }
 
   export type FileMinOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
+    originalName?: SortOrder
     access?: SortOrder
   }
 
@@ -5265,12 +5294,14 @@ export namespace Prisma {
   export type FileCreateWithoutFileUsersInput = {
     id: string
     title: string
+    originalName: string
     access?: $Enums.AccessSpecifier
   }
 
   export type FileUncheckedCreateWithoutFileUsersInput = {
     id: string
     title: string
+    originalName: string
     access?: $Enums.AccessSpecifier
   }
 
@@ -5309,12 +5340,14 @@ export namespace Prisma {
   export type FileUpdateWithoutFileUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
     access?: EnumAccessSpecifierFieldUpdateOperationsInput | $Enums.AccessSpecifier
   }
 
   export type FileUncheckedUpdateWithoutFileUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
     access?: EnumAccessSpecifierFieldUpdateOperationsInput | $Enums.AccessSpecifier
   }
 

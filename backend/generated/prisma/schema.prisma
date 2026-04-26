@@ -15,10 +15,11 @@ model User {
 }
 
 model File {
-  id        String          @id
-  title     String          @map("title")
-  fileUsers FileUsers[]
-  access    AccessSpecifier @default(SHARED)
+  id           String          @id
+  title        String          @map("title")
+  originalName String
+  fileUsers    FileUsers[]
+  access       AccessSpecifier @default(SHARED)
 }
 
 model FileUsers {

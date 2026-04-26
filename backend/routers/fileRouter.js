@@ -36,8 +36,6 @@ file_router.get("/:file_id", auth, async (req, res, next) => {
 
     const file = await file_service.get_one_by_id(file_id)
     const filepath = path.join(path.dirname(path.dirname(fileURLToPath(import.meta.url))), "uploads/", file_id)
-    console.log("file exists: ", fs.existsSync(filepath))
-    console.log(filepath)
 
     const split_name = file.originalName.split(".")
     let filename;
@@ -47,7 +45,8 @@ file_router.get("/:file_id", auth, async (req, res, next) => {
     else
         filename = file.title
 
-    res.download(filepath, file.title, { path: "root" })
+    res.set("Access-Control-Expose-Headers", "Content-Disposition")
+    res.download(filepath, filename, { path: "root" })
 })
 
 file_router.get("/", auth, async (req, res) => {

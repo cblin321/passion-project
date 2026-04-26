@@ -9,3 +9,16 @@ const s3 = new S3Client({
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
     }
 })
+
+async function create_one() {
+
+}
+
+async function get_one() {
+
+}
+
+export {
+    get_one,
+    create_one
+}

@@ -80,11 +80,13 @@ function File() {
             setErr(await res.text())
             return
         }
-
+        let filename = res.headers.get("Content-Disposition").split("filename=")[1]
+        filename = filename.match("\"(.+)\"")[1]
+        console.log(res.headers.get("Content-Disposition"))
         const blob = await res.blob()
         const url = URL.createObjectURL(blob)
         const a = document.createElement("a")
-        a.download = fileTitle
+        a.download = filename
         a.href = url
 
         a.click()

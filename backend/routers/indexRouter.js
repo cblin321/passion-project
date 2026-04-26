@@ -27,7 +27,7 @@ indexRouter.post("/signup", async (req, res, next) => {
         const user = await user_service.add_one(email, hashed)
         if (user.password !== hashed || user.email !== email)
             next(new Error("Database error"))
-        const token = jwt.sign({ id: user.id }, ACCESS_TOKEN_SECRET)
+        const token = jwt.sign({ id: user.id }, ACCESS_TOKEN_SECRET, { expiresIn: "7d" })
         res.json({ token })
     } catch (err) {
         next(err)

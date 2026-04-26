@@ -129,6 +129,7 @@ exports.Prisma.UserScalarFieldEnum = {
 exports.Prisma.FileScalarFieldEnum = {
   id: 'id',
   title: 'title',
+  originalName: 'originalName',
   access: 'access'
 };
 
