@@ -5,6 +5,7 @@ node_modules
 
 /garage/meta
 /garage/data
+/backend/uploads
 
 **/.env*
 
