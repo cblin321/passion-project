@@ -38,13 +38,16 @@ file_router.get("/:file_id", auth, async (req, res, next) => {
     const filepath = path.join(path.dirname(path.dirname(fileURLToPath(import.meta.url))), "uploads/", file_id)
     console.log("file exists: ", fs.existsSync(filepath))
     console.log(filepath)
+
+    const split_name = file.originalName.split(".")
+    let filename;
+
+    if (split_name.length > 0)
+        filename = `${file.title}.${split_name[split_name.length - 1]}`
+    else
+        filename = file.title
+
     res.download(filepath, file.title, { path: "root" })
-    //res.download(filepath, {
-    //    headers: {
-    //        "Content-Type": "application/octet-stream",
-    //    }
-    //}, (err) => next(err)
-    //)
 })
 
 file_router.get("/", auth, async (req, res) => {
@@ -57,9 +60,9 @@ file_router.post("/create", auth, (req, res, next) => {
     req.file_id = crypto.randomUUID()
     next()
 }, upload.single("file"), async (req, res, next) => {
-
+    console.log(req.file)
     const title = req.body.title
-    const file = await file_service.create_one(req.file_id, req.user.id, title)
+    const file = await file_service.create_one(req.file_id, req.user.id, title, req.file.originalname)
     if (!(file.title === title && file.fileUsers?.length === 1 && req.file_id !== file.file_id))
         next(new Error("Database error"))
 
