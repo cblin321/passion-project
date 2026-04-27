@@ -30,5 +30,15 @@ export function useToken() {
     return useContext(AuthContext)
 }
 
+export function useAuthHeader() {
+    const token = useContext(AuthContext)
+    return {
+        headers: {
+            "Authorization": `Bearer ${token.token}`
+        }
+    }
+
+}
+
 
 export default AuthProvider

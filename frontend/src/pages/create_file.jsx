@@ -1,5 +1,5 @@
 // auth
-import { useToken } from "../auth/AuthProvider"
+import { useToken, useAuthHeader } from "../auth/AuthProvider"
 
 // hooks
 import { useRef, useState } from "react"
@@ -35,9 +35,7 @@ function CreateFile() {
         formData.append("file", newFile.current)
         const res = await fetch(`${import.meta.env.VITE_API_URL}/file/create`, {
             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token.token}`
-            },
+            ...useAuthHeader(),
             body: formData
         })
 

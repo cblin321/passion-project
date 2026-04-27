@@ -11,22 +11,6 @@ import * as path from "path"
 import multer from "multer"
 import upload, * as s3_service from "../services/s3_service.js"
 
-//const storage = multer.diskStorage({
-//    destination: function(req, file, cb) {
-//        cb(null, './uploads')
-//    },
-//    filename: function(req, file, cb) {
-//        cb(null, req.file_id)
-//    }
-//})
-//
-//const upload = multer({
-//    storage,
-//    limits: {
-//        fileSize: 1024 ** 2 * 50
-//    }
-//})
-//
 const file_router = express.Router()
 
 const auth = passport.authenticate("jwt", { session: false, failWithError: true })
@@ -35,7 +19,6 @@ file_router.get("/:file_id", auth, async (req, res, next) => {
     const file_id = req.params.file_id
 
     const file = await file_service.get_one_by_id(file_id)
-    //const filepath = path.join(path.dirname(path.dirname(fileURLToPath(import.meta.url))), "uploads/", file_id)
 
     const split_name = file.originalName.split(".")
     let filename;
@@ -48,7 +31,6 @@ file_router.get("/:file_id", auth, async (req, res, next) => {
     res.set("Content-Disposition", `attachment; filename="${filename}"`)
     res.set("Content-Type", "application/octet-stream")
     res.set("Access-Control-Expose-Headers", "Content-Disposition")
-    //res.download(filepath, filename, { path: "root" })
 
     const s3_res = await s3_service.get_one_by_id(file_id)
 
@@ -76,6 +58,10 @@ file_router.post("/create", auth, (req, res, next) => {
         next(new Error("Database error"))
 
     res.json(req.file)
+
+})
+
+file_router.post("/edit/:file_id", auth, (req, res) => {
 
 })
 

@@ -2,7 +2,7 @@
 import { Outlet } from "react-router-dom"
 
 // auth
-import { useToken } from "../auth/AuthProvider"
+import { useToken, useAuthHeader } from "../auth/AuthProvider"
 
 // hooks
 import { useState, useEffect } from "react"
@@ -17,11 +17,7 @@ function File() {
     const [loading, setLoading] = useState()
     const [files, setFiles] = useState()
     const [user, setUser] = useState()
-
-    //if (!user)
-    //    return <>
-    //        <p>you must be logged in to view files</p>
-    //    </>
+    const [updating, setUpdating] = useState(false)
 
     useEffect(() => {
         setLoading(true)
@@ -29,9 +25,7 @@ function File() {
             // fetch files for current user
             let res = await fetch(`${import.meta.env.VITE_API_URL}/file`,
                 {
-                    headers: {
-                        "Authorization": `Bearer ${token.token}`
-                    }
+                    ...useAuthHeader(),
                 })
 
             setLoading(false)
@@ -43,7 +37,6 @@ function File() {
 
             let data = await res.json()
             setFiles(data)
-            console.log(data)
 
             //            res = await fetch(`${import.meta.env.VITE_API_URL}/user`, {
             //                headers: {
@@ -65,16 +58,15 @@ function File() {
             //                return newUser
             //            })
         }
+
         getFiles()
     }, [user])
 
-    const handleDownload = async (e, fileId, fileTitle) => {
-        console.log(`download clicked for ${fileId}`)
+    const handleDownload = async (e, fileId) => {
         e.preventDefault()
+
         let res = await fetch(`${import.meta.env.VITE_API_URL}/file/${fileId}`, {
-            headers: {
-                "Authorization": `Bearer ${token.token}`,
-            }
+            ...useAuthHeader(),
         })
         if (!res.ok) {
             setErr(await res.text())
@@ -93,14 +85,12 @@ function File() {
     }
 
     const fileItems = files ? files.map(file => {
-        //        const role = file.fileUsers.filter(user => {
-        //            return user.userId === user
-        //        })
-        //
-        console.log(`file id ${file.id}`)
+
         return <div key={file.id}>
             <p>{file.title}</p>
-            <button onClick={(e) => { handleDownload(e, file.id, file.title) }}>Download</button>
+            <button onClick={(e) => { handleDownload(e, file.id) }}>Download</button>
+            <button onClick={() => setUpdating(true)}>Update</button>
+
         </div>
     }) : null
 
