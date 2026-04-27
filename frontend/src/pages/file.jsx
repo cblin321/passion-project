@@ -1,6 +1,9 @@
 // router
 import { Outlet } from "react-router-dom"
 
+//components 
+import { EditFile } from "../components/edit_file"
+
 // auth
 import { useToken, useAuthHeader } from "../auth/AuthProvider"
 
@@ -38,25 +41,6 @@ function File() {
             let data = await res.json()
             setFiles(data)
 
-            //            res = await fetch(`${import.meta.env.VITE_API_URL}/user`, {
-            //                headers: {
-            //                    "Authrization": `Bearer ${token.token}`
-            //                }
-            //            })
-            //
-            //            // expect data to be user info
-            //            const newUser = await res.json()
-            //            setUser((prevUser) => {
-            //                const idFields = ["id", "email"]
-            //                if (!prevUser || !newUser)
-            //                    return false
-            //
-            //                // if every unique identifier matches
-            //                if (idFields.every(field => prevUser[field] === newUser[field]))
-            //                    return prevUser
-            //
-            //                return newUser
-            //            })
         }
 
         getFiles()
@@ -90,7 +74,8 @@ function File() {
             <p>{file.title}</p>
             <button onClick={(e) => { handleDownload(e, file.id) }}>Download</button>
             <button onClick={() => setUpdating(true)}>Update</button>
-
+            <EditFile updating={updating} name={file.title} users={file.fileUsers} fileId={file.id}>
+            </EditFile>
         </div>
     }) : null
 
