@@ -9,24 +9,24 @@ import * as file_service from "../services/file_service.js"
 import { fileURLToPath } from "url"
 import * as path from "path"
 import multer from "multer"
-import * as fs from "fs"
+import upload, * as s3_service from "../services/s3_service.js"
 
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, './uploads')
-    },
-    filename: function(req, file, cb) {
-        cb(null, req.file_id)
-    }
-})
-
-const upload = multer({
-    storage,
-    limits: {
-        fileSize: 1024 ** 2 * 50
-    }
-})
-
+//const storage = multer.diskStorage({
+//    destination: function(req, file, cb) {
+//        cb(null, './uploads')
+//    },
+//    filename: function(req, file, cb) {
+//        cb(null, req.file_id)
+//    }
+//})
+//
+//const upload = multer({
+//    storage,
+//    limits: {
+//        fileSize: 1024 ** 2 * 50
+//    }
+//})
+//
 const file_router = express.Router()
 
 const auth = passport.authenticate("jwt", { session: false, failWithError: true })
@@ -35,7 +35,7 @@ file_router.get("/:file_id", auth, async (req, res, next) => {
     const file_id = req.params.file_id
 
     const file = await file_service.get_one_by_id(file_id)
-    const filepath = path.join(path.dirname(path.dirname(fileURLToPath(import.meta.url))), "uploads/", file_id)
+    //const filepath = path.join(path.dirname(path.dirname(fileURLToPath(import.meta.url))), "uploads/", file_id)
 
     const split_name = file.originalName.split(".")
     let filename;
@@ -45,8 +45,14 @@ file_router.get("/:file_id", auth, async (req, res, next) => {
     else
         filename = file.title
 
+    res.set("Content-Disposition", `attachment; filename="${filename}"`)
+    res.set("Content-Type", "application/octet-stream")
     res.set("Access-Control-Expose-Headers", "Content-Disposition")
-    res.download(filepath, filename, { path: "root" })
+    //res.download(filepath, filename, { path: "root" })
+
+    const s3_res = await s3_service.get_one_by_id(file_id)
+
+    s3_res.Body.pipe(res)
 })
 
 file_router.get("/", auth, async (req, res) => {
@@ -59,7 +65,6 @@ file_router.post("/create", auth, (req, res, next) => {
     req.file_id = crypto.randomUUID()
     next()
 }, upload.single("file"), async (req, res, next) => {
-    console.log(req.file)
     const title = req.body.title
     const file = await file_service.create_one(req.file_id, req.user.id, title, req.file.originalname)
     if (!(file.title === title && file.fileUsers?.length === 1 && req.file_id !== file.file_id))
