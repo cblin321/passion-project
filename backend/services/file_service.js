@@ -26,6 +26,9 @@ async function get_one_by_id(file_id) {
     return await prisma.file.findUniqueOrThrow({
         where: {
             id: file_id
+        },
+        include: {
+            fileUsers: true
         }
     })
 }
@@ -36,6 +39,9 @@ async function get_all_by_user(user_id) {
             fileUsers: {
                 some: { userId: user_id }
             }
+        },
+        include: {
+            fileUsers: true
         }
     })
 }

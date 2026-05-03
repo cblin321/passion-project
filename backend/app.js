@@ -46,11 +46,14 @@ const local_opts = {
 }
 passport.use(new jwt_strategy(jwt_opts, async (jwt_payload, done) => {
     const email = jwt_payload.email
+    //console.log(email)
     try {
         const user = await user_service.find_one_by_email(email)
+        // console.log("authenticated user")
+        // console.log(user)
         return done(null, user)
     } catch (err) {
-        console.log(err)
+        // console.log(err)
         return done(err, false)
     }
 }))

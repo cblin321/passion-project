@@ -19,6 +19,7 @@ file_router.get("/:file_id", auth, async (req, res, next) => {
     const file_id = req.params.file_id
 
     const file = await file_service.get_one_by_id(file_id)
+    console.log(file)
 
     const split_name = file.originalName.split(".")
     let filename;

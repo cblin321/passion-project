@@ -7,29 +7,40 @@ import { useAuthHeaders } from "../auth/AuthProvider"
 // components
 import FormField from "./FormField.jsx"
 
-function EditFile({ updating, name, users, fileId }) {
+function EditFile({ updating, file, setFile }) {
+    const { users, fileId } = file
     const [changedUsers, setChangedUsers] = useState([])
-    const name = useRef({ changed: false, name })
+    const title = useRef({ changed: false, title: file.title })
     const [loading, setLoading] = useState(false)
     const [err, setErr] = useState()
+    const [userComponents, setUserComponents] = useState()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        const resBody = {}
+        const newFile = { ...file }
 
-        if (name.current.changed)
-            resBody.name = name
+        if (title.current.changed) {
+            title.current.changed = false
+            newFile.title = title
+        }
 
-        if (name.users.length > 0)
-            resBody.changedUsers = changedUsers
+        if (changedUsers.length > 0) {
+            // get all users that do not share any userIds with changed users
+            const unchangedUsers = users.filter(user => changedUsers.every(changed => changed.userId !== user.Id))
+            newFile.users = [
+                ...unchangedUsers,
+                changedUsers
+            ]
+        }
 
         setLoading(true)
         const res = await fetch(`${import.meta.env.VITE_API_URL}/${fileId}`, {
             ...useAuthHeaders(),
             method: "POST",
             body: {
-                title
+                title,
+                changedUsers: JSON.Stringify(changedUsers)
             }
         })
         setLoading(false)
@@ -39,24 +50,53 @@ function EditFile({ updating, name, users, fileId }) {
             return
         }
 
-        setErr()
+        setFile(
+
+            setErr()
 
     }
 
     if (err)
         return <p>{err}</p>
 
-    const userComponents = users.map()
+    const handleUpdateRole = () => {
+        // send request to endpoint
+    }
+
+    const getUserComponents = users.map(async user => {
+        setLoading(true)
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/${user.userId}`)
+
+        if (!req.ok) {
+            setErr(res.text())
+            return
+        }
+        setErr()
+
+        const userObj = await res.json()
+        setLoading(false)
+
+        return <form>
+            <p>{userObj.email}</p>
+            <p>{user.access}</p>
+            <button onSubmit={(e) => handleUpdateRole(e, user.userId)}>Change role</button>
+        </form>
+    })
+
+
+    useEffect(() => {
+        getUserComponents()
+    }, [userComponents])
 
     return <form visibility={updating ? "visible" : "hidden"} onSubmit={(e) => handleSubmit(e)}>
         <FormField inputType="text" inputPlaceholder="Your name"
-            onChange={(e) => name.current = e.target.value}
-            inputProps={{ value: name.current }}
+            onChange={(e) => title.current = e.target.value}
+            inputProps={{ value: title.current }}
         >
         </FormField>
 
         {userComponents}
-        <button type="submit" disabled={name.current.changed || name.users.length > 0 ? true : false}>
+        <button type="submit" disabled={title.current.changed || changedUsers.length > 0 ? true : false}>
             Submit
         </button>
     </form >

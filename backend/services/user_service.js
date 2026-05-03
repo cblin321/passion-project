@@ -1,8 +1,9 @@
 import { prisma } from "../lib/prisma.js"
 
 const find_one_by_id = async (id) => {
+    const uid = parseInt(id)
     return await prisma.user.findUniqueOrThrow({
-        where: { id },
+        where: { id: uid },
     })
 }
 

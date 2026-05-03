@@ -34,8 +34,19 @@ indexRouter.post("/signup", async (req, res, next) => {
     }
 })
 
-indexRouter.get("/user", passport.authenticate("jwt", { session: false, failWithError: true }), async (req, res, next) => {
-    return req.user
-})
+indexRouter.get("/user/:user_id", passport.authenticate("jwt",
+    { session: false, failWithError: true }),
+    async (req, res, next) => {
+        const id = req.params.user_id
+        const user = await user_service.find_one_by_id(id)
+        if (req.user.id !== user.id) {
+            const err = new Error("You must be logged into the same account you want to fetch info from")
+            err.status = 401
+            next(err)
+            return
+        }
+
+        res.json(user)
+    })
 
 export default indexRouter

@@ -39,12 +39,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 7.7.0
- * Query Engine version: 75cbdc1eb7150937890ad5465d861175c6624711
+ * Prisma Client JS version: 7.8.0
+ * Query Engine version: 3c6e192761c0362d496ed980de936e2f3cebcd3a
  */
 Prisma.prismaVersion = {
-  client: "7.7.0",
-  engine: "75cbdc1eb7150937890ad5465d861175c6624711"
+  client: "7.8.0",
+  engine: "3c6e192761c0362d496ed980de936e2f3cebcd3a"
 }
 
 Prisma.PrismaClientKnownRequestError = PrismaClientKnownRequestError;
@@ -142,8 +142,8 @@ exports.Prisma.ModelName = {
  */
 const config = {
   "previewFeatures": [],
-  "clientVersion": "7.7.0",
-  "engineVersion": "75cbdc1eb7150937890ad5465d861175c6624711",
+  "clientVersion": "7.8.0",
+  "engineVersion": "3c6e192761c0362d496ed980de936e2f3cebcd3a",
   "activeProvider": "postgresql",
   "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel User {\n  id        Int         @id @default(autoincrement())\n  email     String      @unique\n  password  String\n  fileUsers FileUsers[]\n}\n\nmodel File {\n  id           String          @id\n  title        String          @map(\"title\")\n  originalName String\n  fileUsers    FileUsers[]\n  access       AccessSpecifier @default(SHARED)\n}\n\nmodel FileUsers {\n  userId Int\n  fileId String\n  role   Role\n  file   File   @relation(fields: [fileId], references: [id])\n  user   User   @relation(fields: [userId], references: [id])\n\n  @@id([userId, fileId])\n}\n\nenum Role {\n  OWNER\n  EDITOR\n  VIEWER\n}\n\nenum AccessSpecifier {\n  PUBLIC\n  SHARED\n}\n"
 }

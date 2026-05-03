@@ -33,9 +33,7 @@ export function useToken() {
 export function useAuthHeader() {
     const token = useContext(AuthContext)
     return {
-        headers: {
-            "Authorization": `Bearer ${token.token}`
-        }
+        "Authorization": `Bearer ${token.token}`
     }
 
 }

@@ -2,7 +2,7 @@
 import { Outlet } from "react-router-dom"
 
 //components 
-import { EditFile } from "../components/edit_file"
+import EditFile from "../components/edit_file"
 
 // auth
 import { useToken, useAuthHeader } from "../auth/AuthProvider"
@@ -21,6 +21,21 @@ function File() {
     const [files, setFiles] = useState()
     const [user, setUser] = useState()
     const [updating, setUpdating] = useState(false)
+    const authHeader = useAuthHeader()
+
+    const setFile = (newFile) => {
+        // TODO edit an individual file in files
+
+        const fileId = newFile.fileId
+        setFiles(oldFiles => {
+            const filteredFiles = oldFiles.filter(file => file.fileId !== fileId)
+
+            return [
+                ...filteredFiles,
+                newFile
+            ]
+        })
+    }
 
     useEffect(() => {
         setLoading(true)
@@ -28,7 +43,7 @@ function File() {
             // fetch files for current user
             let res = await fetch(`${import.meta.env.VITE_API_URL}/file`,
                 {
-                    ...useAuthHeader(),
+                    headers: authHeader
                 })
 
             setLoading(false)
@@ -73,8 +88,7 @@ function File() {
         return <div key={file.id}>
             <p>{file.title}</p>
             <button onClick={(e) => { handleDownload(e, file.id) }}>Download</button>
-            <button onClick={() => setUpdating(true)}>Update</button>
-            <EditFile updating={updating} name={file.title} users={file.fileUsers} fileId={file.id}>
+            <EditFile file={file} setFile={setFile}>
             </EditFile>
         </div>
     }) : null
