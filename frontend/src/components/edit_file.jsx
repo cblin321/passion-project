@@ -17,8 +17,15 @@ function EditFile({ file, setFile }) {
     const [updating, setUpdating] = useState(false)
     const { fileUsers, fileId } = file
     const users = fileUsers
-    const [changedUsers, setChangedUsers] = useState()
-    const title = useRef({ changed: false, title: file.title })
+
+
+    //list of users that had their perms changed, only includes updated properties
+    const [changedUsers, setChangedUsers] = useState([])
+
+    console.log("changed users")
+    console.log(changedUsers)
+
+    const [title, setTitle] = useState({ changed: false, title: file.title })
     const [loading, setLoading] = useState(false)
     const [err, setErr] = useState()
     const [userComponents, setUserComponents] = useState()
@@ -27,22 +34,22 @@ function EditFile({ file, setFile }) {
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        const newFile = { ...file }
+        //const newFile = { ...file }
 
-        if (title.current.changed) {
-            title.current.changed = false
-            newFile.title = title
+        if (title.changed) {
+            title.changed = false
+            // newFile.title = title
         }
 
-        if (changedUsers.length > 0) {
-            // get all users that do not share any userIds with changed users
-            const unchangedUsers = users.filter(user => changedUsers.every(changed => changed.userId !== user.Id))
-            newFile.users = [
-                ...unchangedUsers,
-                changedUsers
-            ]
-        }
-
+        //        if (changedUsers.length > 0) {
+        //            // get all users that do not share any userIds with changed users
+        //            const unchangedUsers = users.filter(user => changedUsers.every(changed => changed.userId !== user.Id))
+        //            newFile.users = [
+        //                ...unchangedUsers,
+        //                changedUsers
+        //            ]
+        //        }
+        //
         setLoading(true)
         const res = await fetch(`${import.meta.env.VITE_API_URL}/file/${fileId}`, {
             headers: authHeader,
@@ -59,7 +66,7 @@ function EditFile({ file, setFile }) {
         //    return
         //}
 
-        setFile(newFile)
+        setFile(await res.json())
 
         setErr()
 
@@ -67,10 +74,6 @@ function EditFile({ file, setFile }) {
 
     if (err)
         return <p>{err}</p>
-
-    const handleUpdateRole = () => {
-        // send request to endpoint
-    }
 
     const getUserComponents = async () => {
         const roleOptions = FILE_ROLES.map(role => {
@@ -93,11 +96,31 @@ function EditFile({ file, setFile }) {
 
             const userObj = await res.json()
 
+            const handleRoleChange = (e) => {
+                const newRole = e.target.value
+
+                // upsert
+                setChangedUsers(old => {
+                    let currIndex = old.findIndex(i => i.userId === user.userId)
+
+                    if (currIndex === -1)
+                        old.push({ userId: user.userId, role: newRole })
+                    else
+                        old[currIndex] = { ...old[currIndex], role: newRole }
+
+                    return [
+                        ...old
+                    ]
+
+                })
+
+            }
+
 
             return <div key={user.userId}>
                 <p>{userObj.email}</p>
                 <p>{user.role}</p>
-                <select name="" id="">
+                <select name="" id="" onChange={handleRoleChange}>
                     {roleOptions}
                 </select>
                 <button onClick={(e) => handleUpdateRole(e, user.userId)}>Change role</button>
@@ -115,17 +138,25 @@ function EditFile({ file, setFile }) {
     if (err)
         return <p>{err}</p>
 
+    const isUnchanged = !title.changed && !(changedUsers.length > 0)
+
     return <>
         <button onClick={() => setUpdating(old => !old)}>Update</button>
         <form hidden={!updating} onSubmit={(e) => handleSubmit(e)}>
             <FormField inputType="text" inputPlaceholder="Your name"
-                onChange={(e) => title.current.title = e.target.value}
-                inputProps={{ value: title.current.title }}
+                onChange={(e) => {
+                    setTitle({
+                        title: e.target.value,
+                        changed: true
+                    })
+                }}
+                inputProps={{ value: title.title }}
             >
             </FormField>
 
+            <h2>Users:</h2>
             {userComponents}
-            <button type="submit" disabled={!title.current.changed || changedUsers ? true : false}>
+            <button type="submit" disabled={isUnchanged}>
                 Submit
             </button>
         </form >

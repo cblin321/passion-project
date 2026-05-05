@@ -15,6 +15,24 @@ const file_router = express.Router()
 
 const auth = passport.authenticate("jwt", { session: false, failWithError: true })
 
+const isRole = (roles) => {
+    return (req, res, next) => {
+        const file_id = req.params.file_id
+        const file = await file_service.get_one_by_id(file_id)
+        const userIndex = file.fileUsers.findIndex(user => parseInt(user.userId) === req.user.id
+            && roles.some(role => role === user.role))
+        if (userIndex === -1) {
+            const err = new Error("Unauthorized your role has insufficient permissions")
+            err.status = 401
+            next(err)
+            return
+        }
+
+        req.file = file
+        next()
+    }
+}
+
 file_router.get("/:file_id", auth, async (req, res, next) => {
     const file_id = req.params.file_id
 
@@ -36,6 +54,10 @@ file_router.get("/:file_id", auth, async (req, res, next) => {
     const s3_res = await s3_service.get_one_by_id(file_id)
 
     s3_res.Body.pipe(res)
+})
+
+file_router.post("/:file_id", auth, isRole(["EDITOR", "OWNER"]), async (req, res) => {
+
 })
 
 file_router.get("/", auth, async (req, res) => {
@@ -62,7 +84,11 @@ file_router.post("/create", auth, (req, res, next) => {
 
 })
 
-file_router.post("/edit/:file_id", auth, (req, res) => {
+file_router.post("/edit/:file_id", auth, async (req, res) => {
+    const changedUsers = req.body.changedUsers
+
+    const db_res = await file_service.update_many(req.params.file_id, changedUsers)
+
 
 })
 

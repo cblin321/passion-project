@@ -46,6 +46,26 @@ async function get_all_by_user(user_id) {
     })
 }
 
+async function update_many(file_id, changedUsers) {
+    const updatedFields = 
+    const transactions = changedUsers.map(user => {
+        return prisma.fileUsers.update({
+            where: {
+                userId_fileId: {
+                    userId: user.userId,
+                    fileId: file_id
+                }
+            },
+            data: {
+                ...changedUsers
+            }
+        })
+    })
+    const res = prisma.$transaction([
+
+    ])
+}
+
 export {
     create_one,
     get_all_by_user,
