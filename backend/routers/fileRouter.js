@@ -9,6 +9,7 @@ import * as file_service from "../services/file_service.js"
 import upload, * as s3_service from "../services/s3_service.js"
 import * as file_user_service from "../services/file_user_service.js"
 import * as user_service from "../services/user_service.js"
+import crypto from "crypto"
 
 const file_router = express.Router()
 
@@ -20,6 +21,7 @@ const isRole = (roles) => {
     return async (req, res, next) => {
         const file_id = req.params.file_id
         const file = await file_service.get_one_by_id(file_id)
+        // index of this user in fileUser that matches one of the required roles
         const userIndex = file.fileUsers.findIndex(user => parseInt(user.userId) === req.user.id
             && roles.some(role => role === user.role))
         if (userIndex === -1) {
@@ -33,8 +35,15 @@ const isRole = (roles) => {
         next()
     }
 }
-file_router.get("/:file_id/users/:user_id", auth, async (req, res) => {
+file_router.get("/:file_id/users/:user_id", auth, async (req, res, next) => {
     const { file_id, user_id } = req.params
+    const userRelation = await file_user_service.find_one(req.params.user_id, file_id)
+    if (!userRelation) {
+        const err = new Error("Unauthorized")
+        err.status = 401
+        next(err)
+        return
+    }
     const relation = await file_user_service.find_one(user_id, file_id)
 
     res.json(relation)
@@ -54,9 +63,10 @@ file_router.delete("/:file_id/users/:user_id", auth, async (req, res, next) => {
         const err = new Error("Unauthorized")
         err.status = 401
         next(err)
+        return
     }
     try {
-        const db_res = await file_user_service.delete_one(user_id, file_id)
+        const db_res = await file_user_service.delete_one(toRemoveId, file_id)
         res.json(db_res)
     } catch (err) {
         next(err)
@@ -75,18 +85,20 @@ file_router.delete("/:file_id", auth, isRole(["OWNER"]), async (req, res, next) 
 })
 
 //sharing
-file_router.post("/:file_id/users/add", auth, async (req, res) => {
+file_router.post("/:file_id/users/add", auth, async (req, res, next) => {
     const { email, role } = req.body
     const toAdd = await user_service.find_one_by_email(email)
-    let userRole = await file_user_service.find_one(req.user.email, req.params.file_id)
+    let userRole = await file_user_service.find_one(req.user.id, req.params.file_id)
 
     userRole = userRole.role
 
     const userRoleRank = ROLE_LEVEL[userRole]
-    if (userRoleRank < role) {
+    const grantedRoleRank = ROLE_LEVEL[role]
+    if (userRoleRank < grantedRoleRank) {
         const err = new Error("Unauthorized")
         err.status = 401
         next(err)
+        return
     }
 
 
@@ -139,22 +151,38 @@ file_router.post("/create", auth, (req, res, next) => {
 }, upload.single("file"), async (req, res, next) => {
     const title = req.body.title
     const file = await file_service.create_one(req.file_id, req.user.id, title, req.file.originalname)
-    if (!(file.title === title && file.fileUsers?.length === 1 && req.file_id !== file.file_id))
+    if (!(file.title === title && file.fileUsers?.length === 1 && req.file_id !== file.file_id)) {
         next(new Error("Database error"))
+        return
+    }
 
     const file_user = file.fileUsers[0]
 
-    if (!(file_user.userId === req.user.id && file_user.fileId === file.id))
+    if (!(file_user.userId === req.user.id && file_user.fileId === file.id)) {
         next(new Error("Database error"))
+        return
+    }
 
     res.json(req.file)
 
 })
 
+//edit perms, filename
 file_router.post("/:file_id", auth, isRole(["EDITOR", "OWNER"]), async (req, res) => {
-    const changedUsers = req.body.changedUsers
+    const userRole = (await file_user_service.find_one(req.user.id, req.params.file_id)).role
+    const userRoleRank = ROLE_LEVEL[userRole]
+
+    const changedUsers = req.body.changedUsers && await Promise.all(req.body.changedUsers.map(async user => {
+        const currentRole = (await file_user_service.find_one(user.userId, req.params.file_id)).role
+        const currentRoleRank = ROLE_LEVEL[currentRole]
+        const newRoleRank = ROLE_LEVEL[user.role]
+        if (currentRoleRank <= userRoleRank && newRoleRank <= userRoleRank)
+            return user
+        return null
+    })).then(results => results.filter(Boolean))
+
     let db_res;
-    if (changedUsers)
+    if (changedUsers?.length)
         await file_user_service.update_many(req.params.file_id, changedUsers)
 
     if (req.body.title)

@@ -41,7 +41,7 @@ async function delete_one_by_id(file_id) {
 
     const result = await s3.send(
         new ListObjectsV2Command({
-            Bucket: "my-bucket",
+            Bucket: process.env.S3_BUCKET,
         })
     )
 
