@@ -75,7 +75,7 @@ function EditFile({ file, setFile }) {
         const res = await Promise.all(await users.map(async user => {
             const roleOptions = FILE_ROLES.map(role => {
                 const val = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()
-                return <option value={role} selected={role === user.role}>{val}</option>
+                return <option key={`${user.userId}_${role}`} value={role} selected={role === user.role}>{val}</option>
             })
             const res = await fetch(`${import.meta.env.VITE_API_URL}/user/${user.userId}`, {
                 headers: authHeader

@@ -32,11 +32,21 @@ async function update_many(file_id, changedUsers) {
     return res
 }
 
-async function add_one() {
-
+async function add_one(file_id, user_id, role) {
+    return await prisma.fileUsers.create({
+        data: {
+            userId: user_id,
+            fileId: file_id,
+            role
+        },
+    })
 }
 
 async function delete_one() {
+
+}
+
+async function find_one() {
 
 }
 

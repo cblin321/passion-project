@@ -6,11 +6,9 @@ import passport from "passport"
 
 // services
 import * as file_service from "../services/file_service.js"
-import { fileURLToPath } from "url"
-import * as path from "path"
-import multer from "multer"
 import upload, * as s3_service from "../services/s3_service.js"
 import * as file_user_service from "../services/file_user_service.js"
+import * as user_service from "../services/user_service.js"
 
 const file_router = express.Router()
 
@@ -33,6 +31,23 @@ const isRole = (roles) => {
         next()
     }
 }
+
+file_router.post("/:file_id/users/add", auth, async (req, res) => {
+    const { email, role } = req.body
+    const toAdd = await user_service.find_one_by_email(email)
+    if (toAdd) {
+        const userId = toAdd.id
+        const fileId = req.params.file_id
+        const db_res = await file_user_service.add_one(fileId, userId, role)
+        res.json(db_res)
+        return
+    }
+
+    const err = new Error("Not a valid user")
+    err.status = 500
+    next(err)
+})
+
 
 file_router.get("/:file_id", auth, async (req, res, next) => {
     const file_id = req.params.file_id
@@ -100,9 +115,6 @@ file_router.post("/:file_id", auth, async (req, res) => {
     return res.json(db_res)
 })
 
-file_router.post("/:file_id/users/:user_id/add", auth, async (req, res) => {
-
-})
 
 
 export default file_router

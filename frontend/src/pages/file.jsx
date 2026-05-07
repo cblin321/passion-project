@@ -3,9 +3,10 @@ import { Outlet } from "react-router-dom"
 
 //components 
 import EditFile from "../components/edit_file"
+import AddUser from "../components/add_user.jsx"
 
 // auth
-import { useToken, useAuthHeader } from "../auth/AuthProvider"
+import { useAuthHeader } from "../auth/AuthProvider"
 
 // hooks
 import { useState, useEffect } from "react"
@@ -14,7 +15,6 @@ import { useState, useEffect } from "react"
 import { API_URL } from "../const"
 
 function File() {
-    const token = useToken()
 
     const [err, setErr] = useState()
     const [loading, setLoading] = useState()
@@ -88,8 +88,8 @@ function File() {
         return <div key={file.id}>
             <p>{file.title}</p>
             <button onClick={(e) => { handleDownload(e, file.id) }}>Download</button>
-            <EditFile file={file} setFile={setFile}>
-            </EditFile>
+            <EditFile file={file} setFile={setFile} />
+            <AddUser file={file} setFile={setFile} />
         </div>
     }) : null
 
