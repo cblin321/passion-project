@@ -1,11 +1,14 @@
 // react
 import { useState, useRef } from "react"
 
-// providers
+// auth
 import { useToken } from "../auth/AuthProvider"
 
 // components
 import FormField from "../components/FormField"
+
+// router
+import { Link, useNavigate } from "react-router"
 
 function Signup() {
     const email = useRef("")
@@ -14,6 +17,7 @@ function Signup() {
     const { token, setToken } = useToken()
     const [loading, setLoading] = useState(false)
     const [err, setErr] = useState("")
+    const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -38,33 +42,45 @@ function Signup() {
         }
         const data = await res.json()
 
-
-
         setToken(data.token)
         setErr("")
         setLoading(false)
-        //redirect("/")
+        navigate("/file")
     }
 
-    return <form onSubmit={handleSubmit}>
-        <p>Login token: {token}</p>
-        <FormField
-            inputType="email"
-            inputId="email"
-            inputPlaceholder="email@example.com"
-            labelText="Email"
-            onChange={(e) => email.current = e.target.value}
-        />
-        <FormField
-            inputType="password"
-            inputId="password"
-            inputPlaceholder=""
-            labelText="Password"
-            onChange={(e) => password.current = e.target.value}
-        />
+    if (token) {
+        return <p>You are already logged in.</p>
+    }
 
-        <button type="submit" disabled={loading}>Sign up</button>
-    </form>
+    return (
+        <div className="form-card">
+            <h1>Create account</h1>
+            {err && <p className="form-error">{err}</p>}
+            <form onSubmit={handleSubmit}>
+                <FormField
+                    inputType="email"
+                    inputId="email"
+                    inputPlaceholder="email@example.com"
+                    labelText="Email"
+                    onChange={(e) => email.current = e.target.value}
+                />
+                <FormField
+                    inputType="password"
+                    inputId="password"
+                    inputPlaceholder=""
+                    labelText="Password"
+                    onChange={(e) => password.current = e.target.value}
+                />
+
+                <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} type="submit" disabled={loading}>
+                    {loading ? "Creating account..." : "Sign up"}
+                </button>
+            </form>
+            <p style={{ textAlign: "center", marginTop: 16, fontSize: 14 }}>
+                Already have an account? <Link to="/login" style={{ color: "var(--accent)" }}>Log in</Link>
+            </p>
+        </div>
+    )
 }
 
 export default Signup

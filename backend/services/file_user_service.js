@@ -46,12 +46,25 @@ async function delete_one() {
 
 }
 
-async function find_one() {
-
+async function find_one(user_id, file_id) {
+    return await prisma.fileUsers.findUniqueOrThrow({
+        where: {
+            userId_fileId: {
+                userId: parseInt(user_id),
+                fileId: file_id,
+            }
+        },
+        include: {
+            user: {
+                select: { email: true }
+            }
+        }
+    })
 }
 
 export {
     update_many,
     add_one,
-    delete_one
+    delete_one,
+    find_one
 }

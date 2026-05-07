@@ -31,6 +31,13 @@ const isRole = (roles) => {
         next()
     }
 }
+file_router.get("/:file_id/users/:user_id", auth, async (req, res) => {
+    const { file_id, user_id } = req.params
+    const relation = await file_user_service.find_one(user_id, file_id)
+    console.log(relation)
+
+    res.json(relation)
+})
 
 file_router.post("/:file_id/users/add", auth, async (req, res) => {
     const { email, role } = req.body

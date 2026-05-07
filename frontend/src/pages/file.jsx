@@ -1,5 +1,5 @@
 // router
-import { Outlet } from "react-router-dom"
+import { Outlet, Link } from "react-router-dom"
 
 //components 
 import EditFile from "../components/edit_file"
@@ -11,36 +11,27 @@ import { useAuthHeader } from "../auth/AuthProvider"
 // hooks
 import { useState, useEffect } from "react"
 
-// const 
-import { API_URL } from "../const"
+// icons
+import { FileText, Download, Upload } from "lucide-react"
 
 function File() {
-
     const [err, setErr] = useState()
     const [loading, setLoading] = useState()
     const [files, setFiles] = useState()
     const [user, setUser] = useState()
-    const [updating, setUpdating] = useState(false)
     const authHeader = useAuthHeader()
 
     const setFile = (newFile) => {
-        // TODO edit an individual file in files
-
         const fileId = newFile.id
         setFiles(oldFiles => {
             const filteredFiles = oldFiles.filter(file => file.id !== fileId)
-
-            return [
-                ...filteredFiles,
-                newFile
-            ]
+            return [...filteredFiles, newFile]
         })
     }
 
     useEffect(() => {
         setLoading(true)
         async function getFiles() {
-            // fetch files for current user
             let res = await fetch(`${import.meta.env.VITE_API_URL}/file`,
                 {
                     headers: authHeader
@@ -55,7 +46,6 @@ function File() {
 
             let data = await res.json()
             setFiles(data)
-
         }
 
         getFiles()
@@ -83,29 +73,57 @@ function File() {
         setErr("")
     }
 
-    const fileItems = files ? files.map(file => {
-
-        return <div key={file.id}>
-            <p>{file.title}</p>
-            <button onClick={(e) => { handleDownload(e, file.id) }}>Download</button>
-            <EditFile file={file} setFile={setFile} />
-            <AddUser file={file} setFile={setFile} />
-        </div>
-    }) : null
-
-
     if (loading) {
-        return <p>{loading}</p>
+        return <p className="loading">Loading your files...</p>
     }
 
+    const fileItems = files ? files.map(file => (
+        <div key={file.id} className="card file-card">
+            <div className="file-info">
+                <FileText className="file-icon" size={36} />
+                <span className="file-name">{file.title}</span>
+            </div>
+            <div className="file-actions">
+                <button className="btn btn-sm" onClick={(e) => handleDownload(e, file.id)}>
+                    <Download size={14} /> Download
+                </button>
+                <EditFile file={file} setFile={setFile} />
+                <AddUser file={file} setFile={setFile} />
+            </div>
+        </div>
+    )) : null
+
     if (err) {
-        return <p>{err}</p>
+        return <div>
+            <div className="error-banner">{err}</div>
+            <button className="btn" onClick={() => setErr(null)}>Dismiss</button>
+        </div>
     }
 
     return <div>
-        <h1>file dashboard</h1>
-        {fileItems}
-        <Outlet></Outlet>
+        <div className="page-header">
+            <h1>My Files</h1>
+            <Link to="/file/create" className="btn btn-primary">
+                <Upload size={18} /> Upload File
+            </Link>
+        </div>
+
+        {files && files.length === 0 ? (
+            <div className="card" style={{ textAlign: "center", padding: 48 }}>
+                <FileText size={48} style={{ color: "var(--text)", marginBottom: 16, opacity: 0.4 }} />
+                <h3 style={{ margin: "0 0 8px", color: "var(--text-h)" }}>No files yet</h3>
+                <p style={{ margin: "0 0 24px", fontSize: 14 }}>Upload your first file to get started.</p>
+                <Link to="/file/create" className="btn btn-primary">
+                    <Upload size={18} /> Upload File
+                </Link>
+            </div>
+        ) : (
+            <div className="file-list">
+                {fileItems}
+            </div>
+        )}
+
+        <Outlet />
     </div>
 }
 

@@ -1,20 +1,23 @@
 // react
 import { useState, useRef } from "react"
 
-// providers
+// auth
 import { useToken } from "../auth/AuthProvider"
 
 // components
 import FormField from "../components/FormField"
 
-function Login() {
+// router
+import { Link, useNavigate } from "react-router"
 
+function Login() {
     const email = useRef("")
     const password = useRef("")
 
     const { token, setToken } = useToken()
     const [loading, setLoading] = useState(false)
     const [err, setErr] = useState("")
+    const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -40,21 +43,21 @@ function Login() {
         }
         const data = await res.json()
 
-
-
         setToken(data.token)
         setErr("")
         setLoading(false)
-        //redirect("/")
+        navigate("/file")
     }
 
-    return <>
-        {token ? (
-            <p>you are already logged in</p>
-        ) : (
+    if (token) {
+        return <p>You are already logged in.</p>
+    }
+
+    return (
+        <div className="form-card">
+            <h1>Log in</h1>
+            {err && <p className="form-error">{err}</p>}
             <form onSubmit={handleSubmit}>
-                <h1>login</h1>
-                <p>Login token: {token}</p>
                 <FormField
                     inputType="email"
                     inputId="email"
@@ -70,11 +73,15 @@ function Login() {
                     onChange={(e) => password.current = e.target.value}
                 />
 
-                <button type="submit" disabled={loading}>Log in</button>
+                <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} type="submit" disabled={loading}>
+                    {loading ? "Logging in..." : "Log in"}
+                </button>
             </form>
-        )}
-
-    </>
+            <p style={{ textAlign: "center", marginTop: 16, fontSize: 14 }}>
+                Don't have an account? <Link to="/signup" style={{ color: "var(--accent)" }}>Sign up</Link>
+            </p>
+        </div>
+    )
 }
 
 export default Login
