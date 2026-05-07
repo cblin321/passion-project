@@ -5,98 +5,143 @@ import FormField from "./FormField.jsx"
 import Popover from "./Popover.jsx"
 
 const FILE_ROLES = ["OWNER", "EDITOR", "VIEWER"]
+const ROLE_LEVEL = { OWNER: 3, EDITOR: 2, VIEWER: 1 }
 
-function EditFile({ file, setFile }) {
+function EditFile({ file, setFile, currentRole }) {
     const { fileUsers } = file
     const fileId = file.id
     const users = fileUsers
 
     const [changedUsers, setChangedUsers] = useState([])
     const [title, setTitle] = useState({ changed: false, title: file.title })
+    const [loading, setLoading] = useState(false)
+    const [err, setErr] = useState(null)
+    const [userInfos, setUserInfos] = useState([])
+    const authHeader = useAuthHeader()
+
     useEffect(() => {
         setTitle(old => ({ changed: old.changed, title: file.title }))
         setChangedUsers([])
     }, [file])
 
-    const [loading, setLoading] = useState(false)
-    const [err, setErr] = useState()
-    const [userComponents, setUserComponents] = useState()
-    const authHeader = useAuthHeader()
+    useEffect(() => {
+        const fetchUsers = async () => {
+            const infos = await Promise.all(users.map(async user => {
+                try {
+                    const res = await fetch(`${import.meta.env.VITE_API_URL}/file/${fileId}/users/${user.userId}`, {
+                        headers: authHeader
+                    })
+                    if (!res.ok) { setErr(await res.text()); return null }
+                    const userObj = await res.json()
+                    return { userId: user.userId, email: userObj.user.email, role: user.role }
+                } catch {
+                    setErr("Network error — please check your connection")
+                    return null
+                }
+            }))
+            setUserInfos(infos.filter(Boolean))
+        }
+        fetchUsers()
+    }, [file])
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        setLoading(true)
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/file/${fileId}`, {
-            headers: { ...authHeader, "Content-Type": "application/json" },
-            method: "POST",
-            body: JSON.stringify({ title: title.title, changedUsers })
+    const handleRoleChange = (userId, newRole) => {
+        setChangedUsers(old => {
+            const currIndex = old.findIndex(i => i.userId === userId)
+            const updated = [...old]
+            if (currIndex === -1)
+                updated.push({ userId, role: newRole })
+            else
+                updated[currIndex] = { ...updated[currIndex], role: newRole }
+            return updated
         })
-        setTitle(old => ({ ...old, changed: false }))
-        setLoading(false)
-        if (!res.ok) { setErr(await res.text()); return }
-        const data = await res.json()
-        setFile(data)
-        setErr()
     }
 
-    if (err) return <p>{err}</p>
-
-    const getUserComponents = async () => {
-        const res = await Promise.all(users.map(async user => {
-            const roleOptions = FILE_ROLES.map(role => {
-                const val = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()
-                return <option key={`${user.userId}_${role}`} value={role} selected={role === user.role}>{val}</option>
-            })
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/file/${fileId}/users/${user.userId}`, {
+    const handleRemoveUser = async (userId, setOpen) => {
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/file/${fileId}/users/${userId}`, {
+                method: "DELETE",
                 headers: authHeader
             })
-            if (!res.ok) { setErr(res.text()); return }
-            const userObj = await res.json()
-            const email = userObj.user.email
-            const handleRoleChange = (e) => {
-                const newRole = e.target.value
-                setChangedUsers(old => {
-                    let currIndex = old.findIndex(i => i.userId === user.userId)
-                    if (currIndex === -1)
-                        old.push({ userId: user.userId, role: newRole })
-                    else
-                        old[currIndex] = { ...old[currIndex], role: newRole }
-                    return [...old]
-                })
+            if (!res.ok) { setErr(await res.text()); return }
+            const updatedFile = {
+                ...file,
+                fileUsers: file.fileUsers.filter(fu => fu.userId !== userId)
             }
-            return <div key={user.userId} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-                <span style={{ flex: 1, fontSize: 14, color: "var(--text)" }}>{email}</span>
-                <span style={{ fontSize: 12, color: "var(--text)", opacity: 0.6, textTransform: "lowercase" }}>{user.role}</span>
-                <select className="role-select" onChange={handleRoleChange}>
-                    {roleOptions}
-                </select>
-            </div>
-        }))
-        setUserComponents(res)
+            setFile(updatedFile)
+            setOpen(false)
+        } catch {
+            setErr("Network error — please check your connection")
+        }
     }
 
-    useEffect(() => { getUserComponents() }, [])
+    const handleSubmit = async (e, setOpen) => {
+        e.preventDefault()
+        setLoading(true)
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/file/${fileId}`, {
+                headers: { ...authHeader, "Content-Type": "application/json" },
+                method: "POST",
+                body: JSON.stringify({ title: title.title, changedUsers })
+            })
+            setTitle(old => ({ ...old, changed: false }))
+            setLoading(false)
+            if (!res.ok) { setErr(await res.text()); return }
+            const data = await res.json()
+            setFile(data)
+            setErr(null)
+            setOpen(false)
+        } catch {
+            setLoading(false)
+            setErr("Network error — please check your connection")
+        }
+    }
 
-    if (err) return <p>{err}</p>
+    if (err) return <div className="error-banner"><span>{err}</span><button className="error-dismiss" onClick={() => setErr(null)}>×</button></div>
 
     return (
-        <Popover trigger={() => (
-            <button className="btn btn-sm">Edit</button>
-        )}>
+        <Popover trigger={({ open }) => (
+            <button className={`btn btn-sm btn-neutral-blue${open ? ' active' : ''}`}>Edit</button>
+        )} menuClass="popover-menu-accent-blue">
             {(setOpen) => (
-                <form onSubmit={async (e) => { await handleSubmit(e); setOpen(false) }}>
+                <form onSubmit={(e) => handleSubmit(e, setOpen)}>
                     <div className="popover-section">
-                        <div className="popover-section-header">Details</div>
+                        <div className="popover-section-header" style={{ color: "var(--accent-blue)" }}>Details</div>
                         <FormField inputType="text" inputPlaceholder="My file"
                             onChange={(e) => setTitle({ title: e.target.value, changed: true })}
                             inputProps={{ value: title.title }}
                         />
                     </div>
                     <div className="popover-section">
-                        <div className="popover-section-header">Permissions</div>
-                        {userComponents}
+                        <div className="popover-section-header" style={{ color: "var(--accent-blue)" }}>Permissions</div>
+                        {userInfos.map(info => {
+                            const canManage = ROLE_LEVEL[info.role] <= ROLE_LEVEL[currentRole]
+                            const allowedRoles = FILE_ROLES.filter(r => ROLE_LEVEL[r] <= ROLE_LEVEL[currentRole])
+                            const roleOptions = allowedRoles.map(role => (
+                                <option key={`${info.userId}_${role}`} value={role} selected={role === info.role}>
+                                    {role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()}
+                                </option>
+                            ))
+                            return (
+                                <div key={info.userId} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                                    <span style={{ flex: 1, fontSize: 14, color: "var(--text)" }}>{info.email}</span>
+                                    <span style={{ fontSize: 12, color: "var(--text)", opacity: 0.6, textTransform: "lowercase" }}>{info.role}</span>
+                                    {canManage ? (
+                                        <select className="role-select" onChange={(e) => handleRoleChange(info.userId, e.target.value)}>
+                                            {roleOptions}
+                                        </select>
+                                    ) : (
+                                        <span style={{ fontSize: 12, color: "var(--text)", opacity: 0.4 }}>{info.role}</span>
+                                    )}
+                                    {canManage && (
+                                        <button type="button" className="btn btn-sm btn-danger" onClick={() => handleRemoveUser(info.userId, setOpen)}>
+                                            Remove
+                                        </button>
+                                    )}
+                                </div>
+                            )
+                        })}
                         <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
-                            <button className="btn btn-primary btn-sm" type="submit" disabled={loading}>
+                            <button className="btn btn-blue-solid btn-sm" type="submit" disabled={loading}>
                                 {loading ? "Saving..." : "Save"}
                             </button>
                         </div>

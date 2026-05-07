@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 
-function Popover({ trigger, children }) {
+function Popover({ trigger, children, menuClass }) {
     const [open, setOpen] = useState(false)
     const ref = useRef(null)
 
@@ -15,9 +15,9 @@ function Popover({ trigger, children }) {
 
     return (
         <div ref={ref} style={{ position: "relative", display: "inline-block" }}>
-            <div onClick={() => setOpen(o => !o)}>{trigger(setOpen)}</div>
+            <div onClick={() => setOpen(o => !o)}>{trigger({ open, setOpen })}</div>
             {open && (
-                <div className="popover-menu">
+                <div className={`popover-menu${menuClass ? ` ${menuClass}` : ""}`}>
                     {children(setOpen)}
                 </div>
             )}

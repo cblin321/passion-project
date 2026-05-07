@@ -1,5 +1,5 @@
 // services
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3"
+import { S3Client, GetObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3"
 import multerS3 from "multer-s3"
 import multer from "multer"
 
@@ -32,8 +32,27 @@ async function get_one_by_id(file_id) {
     }))
 }
 
+async function delete_one_by_id(file_id) {
+
+    const res = await s3.send(new DeleteObjectCommand({
+        Bucket: process.env.S3_BUCKET,
+        Key: file_id
+    }))
+
+    const result = await s3.send(
+        new ListObjectsV2Command({
+            Bucket: "my-bucket",
+        })
+    )
+
+    console.log(result.Contents)
+
+    return res
+}
+
 export default upload
 
 export {
-    get_one_by_id
+    get_one_by_id,
+    delete_one_by_id
 }

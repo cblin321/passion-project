@@ -16,37 +16,42 @@ function Login() {
 
     const { token, setToken } = useToken()
     const [loading, setLoading] = useState(false)
-    const [err, setErr] = useState("")
+    const [err, setErr] = useState(null)
     const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         setLoading(true)
 
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/login`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    email: email.current,
-                    password: password.current,
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/login`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email.current,
+                        password: password.current,
+                    })
                 })
-            })
 
-        if (!res.ok) {
-            const data = await res.text()
-            setErr(data)
+            if (!res.ok) {
+                const data = await res.text()
+                setErr(data)
+                setLoading(false)
+                return
+            }
+            const data = await res.json()
+
+            setToken(data.token)
+            setErr(null)
             setLoading(false)
-            return
+            navigate("/file")
+        } catch {
+            setLoading(false)
+            setErr("Network error — please check your connection")
         }
-        const data = await res.json()
-
-        setToken(data.token)
-        setErr("")
-        setLoading(false)
-        navigate("/file")
     }
 
     if (token) {
@@ -56,7 +61,12 @@ function Login() {
     return (
         <div className="form-card">
             <h1>Log in</h1>
-            {err && <p className="form-error">{err}</p>}
+            {err && (
+                <div className="error-banner">
+                    <span>{err}</span>
+                    <button className="error-dismiss" onClick={() => setErr(null)}>×</button>
+                </div>
+            )}
             <form onSubmit={handleSubmit}>
                 <FormField
                     inputType="email"

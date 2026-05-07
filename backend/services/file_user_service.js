@@ -42,8 +42,15 @@ async function add_one(file_id, user_id, role) {
     })
 }
 
-async function delete_one() {
-
+async function delete_one(user_id, file_id) {
+    return await prisma.fileUsers.delete({
+        where: {
+            userId_fileId: {
+                userId: parseInt(user_id),
+                fileId: file_id
+            }
+        }
+    })
 }
 
 async function find_one(user_id, file_id) {

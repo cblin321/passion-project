@@ -14,6 +14,8 @@ const file_router = express.Router()
 
 const auth = passport.authenticate("jwt", { session: false, failWithError: true })
 
+const ROLE_LEVEL = { OWNER: 3, EDITOR: 2, VIEWER: 1 }
+
 const isRole = (roles) => {
     return async (req, res, next) => {
         const file_id = req.params.file_id
@@ -34,14 +36,60 @@ const isRole = (roles) => {
 file_router.get("/:file_id/users/:user_id", auth, async (req, res) => {
     const { file_id, user_id } = req.params
     const relation = await file_user_service.find_one(user_id, file_id)
-    console.log(relation)
 
     res.json(relation)
 })
 
+file_router.delete("/:file_id/users/:user_id", auth, async (req, res, next) => {
+    const { file_id } = req.params
+    const toRemoveId = req.params.user_id
+
+    const userRole = (await file_user_service.find_one(req.user.id, req.params.file_id)).role
+
+    const toRemoveRole = (await file_user_service.find_one(toRemoveId, req.params.file_id)).role
+
+    const userRoleRank = ROLE_LEVEL[userRole]
+    const toRemoveRoleRank = ROLE_LEVEL[toRemoveRole]
+    if (userRoleRank < toRemoveRoleRank) {
+        const err = new Error("Unauthorized")
+        err.status = 401
+        next(err)
+    }
+    try {
+        const db_res = await file_user_service.delete_one(user_id, file_id)
+        res.json(db_res)
+    } catch (err) {
+        next(err)
+    }
+})
+
+file_router.delete("/:file_id", auth, isRole(["OWNER"]), async (req, res, next) => {
+    const { file_id } = req.params
+    try {
+        await s3_service.delete_one_by_id(file_id)
+        const db_res = await file_service.delete_one(file_id)
+        res.json(db_res)
+    } catch (err) {
+        next(err)
+    }
+})
+
+//sharing
 file_router.post("/:file_id/users/add", auth, async (req, res) => {
     const { email, role } = req.body
     const toAdd = await user_service.find_one_by_email(email)
+    let userRole = await file_user_service.find_one(req.user.email, req.params.file_id)
+
+    userRole = userRole.role
+
+    const userRoleRank = ROLE_LEVEL[userRole]
+    if (userRoleRank < role) {
+        const err = new Error("Unauthorized")
+        err.status = 401
+        next(err)
+    }
+
+
     if (toAdd) {
         const userId = toAdd.id
         const fileId = req.params.file_id
@@ -79,10 +127,6 @@ file_router.get("/:file_id", auth, async (req, res, next) => {
     s3_res.Body.pipe(res)
 })
 
-file_router.post("/:file_id", auth, isRole(["EDITOR", "OWNER"]), async (req, res) => {
-
-})
-
 file_router.get("/", auth, async (req, res) => {
     const files = await file_service.get_all_by_user(req.user.id)
     res.json(files)
@@ -107,14 +151,14 @@ file_router.post("/create", auth, (req, res, next) => {
 
 })
 
-file_router.post("/:file_id", auth, async (req, res) => {
+file_router.post("/:file_id", auth, isRole(["EDITOR", "OWNER"]), async (req, res) => {
     const changedUsers = req.body.changedUsers
     let db_res;
     if (changedUsers)
         await file_user_service.update_many(req.params.file_id, changedUsers)
 
     if (req.body.title)
-        db_res = await file_service.update_one(req.params.file_id, req.body.title)
+        db_res = await file_service.update_one(req.params.file_id, { title: req.body.title })
 
     if (!db_res)
         db_res = await file_service.get_one_by_id(req.params.file_id)

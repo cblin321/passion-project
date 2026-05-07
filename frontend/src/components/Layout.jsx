@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router"
 import { useToken } from "../auth/AuthProvider"
-import { FileText, LogOut, Upload, HomeIcon, LogIn, UserPlus } from "lucide-react"
+import { FileText, LogOut, HomeIcon, LogIn, UserPlus } from "lucide-react"
 
 function Nav() {
     const { token, setToken } = useToken()
@@ -18,7 +18,6 @@ function Nav() {
                 {token ? (
                     <>
                         <Link to="/file" className="nav-link"><FileText size={18} /> Files</Link>
-                        <Link to="/file/create" className="nav-link"><Upload size={18} /> Upload</Link>
                         <button onClick={handleLogout} className="nav-link nav-logout"><LogOut size={18} /> Logout</button>
                     </>
                 ) : (

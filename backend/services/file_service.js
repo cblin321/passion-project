@@ -3,7 +3,13 @@ import { prisma } from "../lib/prisma.js"
 async function create_one(file_id, user_id, title, originalName) {
     return await prisma.file.create({
         include: {
-            fileUsers: true
+            fileUsers: {
+                include: {
+                    user: {
+                        select: { id: true, email: true }
+                    }
+                }
+            }
         },
         data: {
             id: file_id,
@@ -28,7 +34,13 @@ async function get_one_by_id(file_id) {
             id: file_id
         },
         include: {
-            fileUsers: true
+            fileUsers: {
+                include: {
+                    user: {
+                        select: { id: true, email: true }
+                    }
+                }
+            }
         }
     })
 }
@@ -40,20 +52,52 @@ async function get_all_by_user(user_id) {
                 some: { userId: user_id }
             }
         },
+        orderBy: {
+            title: 'asc'
+        },
         include: {
-            fileUsers: true
+            fileUsers: {
+                include: {
+                    user: {
+                        select: { id: true, email: true }
+                    }
+                }
+            }
         }
     })
 }
 
 
-async function update_one(file_id) {
+async function update_one(file_id, data) {
+    return await prisma.file.update({
+        where: {
+            id: file_id
+        },
+        data,
+        include: {
+            fileUsers: {
+                include: {
+                    user: {
+                        select: { id: true, email: true }
+                    }
+                }
+            }
+        }
+    })
+}
 
+async function delete_one(file_id) {
+    return await prisma.file.delete({
+        where: {
+            id: file_id
+        }
+    })
 }
 
 export {
     create_one,
     get_all_by_user,
     get_one_by_id,
-    update_one
+    update_one,
+    delete_one
 }
