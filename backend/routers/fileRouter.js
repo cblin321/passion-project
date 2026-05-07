@@ -10,13 +10,14 @@ import { fileURLToPath } from "url"
 import * as path from "path"
 import multer from "multer"
 import upload, * as s3_service from "../services/s3_service.js"
+import * as file_user_service from "../services/file_user_service.js"
 
 const file_router = express.Router()
 
 const auth = passport.authenticate("jwt", { session: false, failWithError: true })
 
 const isRole = (roles) => {
-    return (req, res, next) => {
+    return async (req, res, next) => {
         const file_id = req.params.file_id
         const file = await file_service.get_one_by_id(file_id)
         const userIndex = file.fileUsers.findIndex(user => parseInt(user.userId) === req.user.id
@@ -84,12 +85,24 @@ file_router.post("/create", auth, (req, res, next) => {
 
 })
 
-file_router.post("/edit/:file_id", auth, async (req, res) => {
+file_router.post("/:file_id", auth, async (req, res) => {
     const changedUsers = req.body.changedUsers
+    let db_res;
+    if (changedUsers)
+        await file_user_service.update_many(req.params.file_id, changedUsers)
 
-    const db_res = await file_service.update_many(req.params.file_id, changedUsers)
+    if (req.body.title)
+        db_res = await file_service.update_one(req.params.file_id, req.body.title)
 
+    if (!db_res)
+        db_res = await file_service.get_one_by_id(req.params.file_id)
+
+    return res.json(db_res)
+})
+
+file_router.post("/:file_id/users/:user_id/add", auth, async (req, res) => {
 
 })
+
 
 export default file_router

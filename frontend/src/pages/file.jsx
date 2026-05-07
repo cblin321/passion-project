@@ -26,9 +26,9 @@ function File() {
     const setFile = (newFile) => {
         // TODO edit an individual file in files
 
-        const fileId = newFile.fileId
+        const fileId = newFile.id
         setFiles(oldFiles => {
-            const filteredFiles = oldFiles.filter(file => file.fileId !== fileId)
+            const filteredFiles = oldFiles.filter(file => file.id !== fileId)
 
             return [
                 ...filteredFiles,
