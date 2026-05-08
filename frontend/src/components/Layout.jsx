@@ -13,7 +13,7 @@ function Nav() {
 
     return (
         <nav className="nav">
-            <Link to={token ? "/file" : "/"} className="nav-brand">Passion Project</Link>
+            <Link to="/" className="nav-brand">Passion Project</Link>
             <div className="nav-links">
                 {token ? (
                     <>

@@ -21,6 +21,12 @@ indexRouter.post("/login", passport.authenticate("local", { session: false }), (
 indexRouter.post("/signup", async (req, res, next) => {
     const email = req.body.email
     const password = req.body.password
+    if (!(password && email)) {
+        const err = new Error("You must enter a email and password to create an account")
+        err.status = 401
+        next(err)
+        return
+    }
     console.log(email, password)
     const hashed = await bcrypt.hash(password, 10)
     try {
